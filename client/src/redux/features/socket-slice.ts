@@ -4,12 +4,12 @@ import { Socket, io } from "socket.io-client";
 
 export interface SocketState {
   socket: Socket;
-  uid:number;
+
 }
 
 const initialState: SocketState = {
   socket: io("http://localhost:8000/"),
-  uid:123
+
 };
 
 export const socketSlice = createSlice({

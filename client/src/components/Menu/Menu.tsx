@@ -5,17 +5,19 @@ import {
   createSession,
   joinSession,
   leaveSession,
-  setPlayer,
+  MobileCodes,
 } from "../../redux/features/menu-slice";
+
+import ChoosePlayer from "../ChoosePlayer/ChoosePlayer";
 const Menu = () => {
   const dispatch = useDispatch();
-  const { host, sessionPassword, socket, inSession } = useSelector(
+  const { host, sessionId, socket, inSession } = useSelector(
     ({
-      menu: { host, sessionPassword, inSession },
+      menu: { host, sessionId, inSession },
       socket: { socket },
     }: RootState) => ({
       host,
-      sessionPassword,
+      sessionId,
       socket,
       inSession,
     })
@@ -24,23 +26,23 @@ const Menu = () => {
 
   const [error, setError] = useState<boolean>(false);
   const leave = useCallback(() => {
-    sessionPassword && socket.emit("LEAVE_SESSION", sessionPassword);
+    sessionId && socket.emit("LEAVE_SESSION", sessionId);
     dispatch(leaveSession());
-  }, [socket, sessionPassword]);
+  }, [socket, sessionId]);
   useEffect(() => {
     !inSession && leave();
   }, [inSession]);
-  useEffect(() => {
-    host && socket.emit("CREATE_SESSION", sessionPassword);
-  }, [sessionPassword, host]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setJoinVal(e.target.value.toUpperCase());
   const submitSessionID = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      socket.emit("JOIN_SESSION", joinVal, (foundSession: boolean) => {
+      socket.emit("JOIN_SESSION", joinVal, (foundSession: boolean,mobileCodes:MobileCodes) => {
         if (foundSession) {
-          dispatch(joinSession(joinVal));
+          
+          
+          dispatch(joinSession({sessionId:joinVal,mobileCodes}));
         } else {
           setError(true);
         }
@@ -56,7 +58,7 @@ const Menu = () => {
           <div>
             <button
               onClick={() => {
-                dispatch(createSession());
+                dispatch(createSession(socket));
               }}
             >
               <h3>Create Game</h3>
@@ -78,7 +80,7 @@ const Menu = () => {
       ) : (
         <>
           <button onClick={() => leave()}>Back</button>
-          <p>{host ? `${sessionPassword} Host` : sessionPassword}</p>
+          <p>{host ? `${sessionId} Host` : sessionId}</p>
           <ChoosePlayer playerNum={1} />
           <ChoosePlayer playerNum={2} />
         </>
@@ -87,62 +89,4 @@ const Menu = () => {
   );
 };
 export default Menu;
-interface ChoosePlayerProps {
-  playerNum: 1 | 2;
-}
-const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
-  const dispatch = useDispatch();
-  const { sessionPassword, socket, player } = useSelector(
-    ({ menu: { sessionPassword, player }, socket: { socket } }: RootState) => ({
-      sessionPassword,
-      socket,
-      player,
-    })
-  );
-  const [playerSelected, setPlayerSelected] = useState({
-    player1: null,
-    player2: null,
-  });
-  const updateDevice = (device: string) => {
-    socket.emit("CONNECT_PLAYER", sessionPassword, playerNum, device);
-    setPlayerSelected((old) => ({ ...old, [`player${playerNum}`]: device }));
-  };
-  const connectPlayer = (device: string, playerButton: 1 | 2) => {
-    console.log("selected player", device, player);
-    if (!playerSelected[`player${playerNum}`] && !player) {
-      dispatch(setPlayer(playerNum));
-      updateDevice(device);
-    } else if (playerButton === player) {
-      updateDevice(device);
-    }
-  };
 
-  useEffect(() => {
-    socket.on("PLAYER_CONNECTED", (player, device) => {
-      console.log(player, device);
-
-      setPlayerSelected((old) => ({ ...old, [`player${player}`]: device }));
-    });
-  }, [socket]);
-  const active = (device:string) =>({
-    border: playerSelected[`player${playerNum}`] === device ? "1px solid red" : "",
-  });
-  return (
-    <div>
-      <h3>{`Player ${playerNum}`}</h3>
-      <p>
-        {playerNum === 1 ? "Left" : "Right"} Paddle{" "}
-        {playerSelected[`player${playerNum}`] && `Selected`}
-      </p>
-      <button
-        style={active("keyboard")}
-        onClick={() => connectPlayer("keyboard", playerNum)}
-      >
-        Keyboard
-      </button>
-      <button style={active("mobile")} onClick={() => connectPlayer("mobile", playerNum)}>
-        Mobile
-      </button>
-    </div>
-  );
-};

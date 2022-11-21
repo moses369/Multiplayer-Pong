@@ -13,10 +13,10 @@ import { stringify } from "querystring";
 
 const GameDisplay = () => {
   const dispatch = useDispatch();
-  const { socket, uid, player1, player2 } = useSelector(
-    ({ socket: { socket, uid }, paddle: { player1, player2 } }: RootState) => ({
+  const { socket,  player1, player2 } = useSelector(
+    ({ socket: { socket, }, paddle: { player1, player2 } }: RootState) => ({
       socket,
-      uid,
+      
       player1,
       player2,
     })

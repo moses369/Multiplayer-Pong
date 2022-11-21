@@ -23,30 +23,40 @@ io.on("connection", (socket) => {
             }
         }
     }, 5_000);
-    socket.on("CREATE_SESSION", (id) => {
+    socket.on("CREATE_SESSION", (id, { player1, player2 }) => {
         socket.join(id);
-        sessions[id] = { player1: null, player2: null, host: socket.id };
+        const player = (code) => ({ device: "", mobileCode: code });
+        sessions[id] = {
+            player1: player(player1),
+            player2: player(player2),
+            host: socket.id,
+        };
         console.log(` created session ${id}`, sessions[id]);
         console.log(io.sockets.adapter.rooms.get(id), "\n");
     });
     socket.on("JOIN_SESSION", (id, callback) => {
-        console.log(callback);
-        callback(!!sessions[id]);
-        if (sessions[id]) {
-            console.log(` joined session ${id}`, sessions[id]);
+        const sessionID = id.substring(0, 4);
+        const mobileCode = id.substring(6);
+        const session = sessions[sessionID];
+        callback(!!session, {
+            player1: session?.player1.mobileCode,
+            player2: session?.player2.mobileCode,
+        });
+        if (session) {
+            console.log(` joined session ${id}`, session);
+            console.log(session.player1.mobileCode === id);
+            console.log(session.player2.mobileCode === id);
             socket.join(id);
-            console.log(sessions[id].player1);
-            console.log(sessions[id].player2);
-            sessions[id].player1 && socket.emit('PLAYER_CONNECTED', 1, sessions[id].player1);
-            sessions[id].player2 && socket.emit('PLAYER_CONNECTED', 2, sessions[id].player2);
+            session.player1.device &&
+                socket.emit("PLAYER_CONNECTED", 'player1', session.player1.device);
+            session.player2.device &&
+                socket.emit("PLAYER_CONNECTED", 'player2', session.player2.device);
             console.log(io.sockets.adapter.rooms.get(id), "\n");
         }
     });
     socket.on("LEAVE_SESSION", (id) => {
-        console.log("before leaving", io.sockets.adapter.rooms.get(id));
-        console.log(socket.id);
         socket.leave(id);
-        console.log("after leaving", io.sockets.adapter.rooms.get(id));
+        console.log(`${socket.id} left room ${id}`, io.sockets.adapter.rooms.get(id));
         socket.id === sessions[id]?.host ||
             (!io.sockets.adapter.rooms.get(id) && delete sessions[id]);
         console.log(`${socket.id === sessions[id]?.host || !io.sockets.adapter.rooms.get(id)
@@ -54,9 +64,10 @@ io.on("connection", (socket) => {
             : "left"} room ${id} \n`);
     });
     socket.on("CONNECT_PLAYER", (id, player, device) => {
-        sessions[id][`player${player}`] = device;
-        console.log(`${id} room player${player} connected`);
-        socket.to(id).emit('PLAYER_CONNECTED', player, device);
+        sessions[id][player].device = device;
+        console.log(`${id} room ${player} connected to ${device}`);
+        console.log(`${sessions[id][player]} \n`);
+        socket.to(id).emit("PLAYER_CONNECTED", player, device);
     });
     socket.on("MOVE_PADDLE", (id, direction, player) => {
         console.log("MOVINIG", { player, id, direction });

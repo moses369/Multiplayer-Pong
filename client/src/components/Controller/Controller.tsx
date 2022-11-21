@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux";
 
 const Controller = () => {
-  const { socket, uid } = useSelector(
-    ({ socket: { socket, uid } }: RootState) => ({ socket, uid })
+  const { socket } = useSelector(
+    ({ socket: { socket } }: RootState) => ({ socket })
   );
   useEffect(() => {
  

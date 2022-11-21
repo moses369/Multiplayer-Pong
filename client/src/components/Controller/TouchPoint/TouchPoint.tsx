@@ -9,15 +9,15 @@ interface Props {
 export interface MoveSocket {
   direction: "up" | "down";
   player: "player1" | "player2";
-  id: number;
+  id: string;
 }
 const TouchPoint = ({ direction, Arrow }: Props) => {
-  const { socket, uid } = useSelector(
-    ({ socket: { socket, uid } }: RootState) => ({ socket, uid })
+  const { socket,sessionId, player } = useSelector(
+    ({ socket: { socket }, menu:{sessionId,player} }: RootState) => ({ socket,sessionId,player })
   );
 
   const [holding, setHolding] = useState<boolean>(false);
-  const [player, setPlayer] = useState<"player1" | "player2">("player1");
+  
 
   const moveSocket = useCallback(({ direction, player, id }: MoveSocket) => {
     socket.emit("MOVE_PADDLE", id, direction, player);
@@ -33,7 +33,7 @@ const TouchPoint = ({ direction, Arrow }: Props) => {
 
   useEffect(() => {
     if (holding) {
-      id.current = moving({ direction, player, id: uid });
+      id.current = moving({ direction, player, id:sessionId });
     } else {
       clearInterval(id.current);
     }
@@ -42,7 +42,7 @@ const TouchPoint = ({ direction, Arrow }: Props) => {
   return (
     <button
       onTouchStart={(e) => {
-        moveSocket({ direction, player, id:uid });
+        moveSocket({ direction, player, id:sessionId });
         setHolding(true);
       }}
       onTouchEnd={(e) => {
