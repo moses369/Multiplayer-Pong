@@ -40,6 +40,7 @@ io.on("connection", (socket) => {
         const player = () => ({
             device: "",
             mobileCode: createMobileCode(generatedId),
+            socketId: "",
         });
         sessions[generatedId] = {
             player1: player(),
@@ -69,36 +70,44 @@ io.on("connection", (socket) => {
             player2: session?.player2.mobileCode,
         });
         if (session || (sessions[sessionID].local && id.length > 4)) {
-            sessionID.length === 4 && (sessions[sessionID].guest = socket.id);
+            const checkForDeviceConnections = (player) => {
+                session[player].device &&
+                    socket.emit("PLAYER_CONNECTED", player, session[player].device);
+            };
+            const joinMobile = (player) => {
+                if (session[player].mobileCode === id) {
+                    sessions[sessionID][player].device = "mobile";
+                    sessions[sessionID][player].socketId = socket.id;
+                    socket.emit("CONNECT_MOBILE", player);
+                    socket.to(sessionID).emit("PLAYER_CONNECTED", player, "mobile");
+                }
+                if (session.player1.device && session.player2.device) {
+                    socket.to(sessions[sessionID].host).emit("READY_TO_START");
+                }
+            };
+            id.length === 4 && (sessions[sessionID].guest = socket.id);
+            checkForDeviceConnections("player1");
+            checkForDeviceConnections("player2");
+            joinMobile("player1");
+            joinMobile("player2");
             socket.join(sessionID);
             console.log(` joined session ${sessionID}`, session);
-            session.player1.device &&
-                socket.emit("PLAYER_CONNECTED", "player1", session.player1.device);
-            session.player2.device &&
-                socket.emit("PLAYER_CONNECTED", "player2", session.player2.device);
-            if (session.player1.mobileCode === id) {
-                socket.emit("CONNECT_MOBILE", "player1");
-                socket.to(sessionID).emit("PLAYER_CONNECTED", "player1", "mobile");
-            }
-            else if (session.player2.mobileCode === id) {
-                socket.emit("CONNECT_MOBILE", "player2");
-                socket.to(sessionID).emit("PLAYER_CONNECTED", "player2", "mobile");
-            }
             console.log(io.sockets.adapter.rooms.get(sessionID), "\n");
         }
     });
     socket.on("LEAVE_SESSION", (id) => {
         socket.leave(id);
-        console.log(`${socket.id} left room ${id}`, io.sockets.adapter.rooms.get(id));
-        if (socket.id === sessions[id].host || !io.sockets.adapter.rooms.get(id)) {
-            socket.to(sessions[id].guest).emit("HOST_DISCONNECTED", () => {
-                io.socketsLeave(id);
-                delete sessions[id];
-            });
+        if (sessions[id]) {
+            const noHost = socket.id === sessions[id].host;
+            if (noHost) {
+                socket.to(id).emit("HOST_DISCONNECTED", () => {
+                    io.socketsLeave(id);
+                    delete sessions[id];
+                });
+            }
+            console.log(`${socket.id} left room ${id}`);
+            console.log(`${noHost ? "deleted" : "left"} room ${id} \n`);
         }
-        console.log(`${socket.id === sessions[id].host || !io.sockets.adapter.rooms.get(id)
-            ? "deleted"
-            : "left"} room ${id} \n`);
     });
     socket.on("CONNECT_PLAYER", (id, player, device) => {
         sessions[id][player].device = device;
@@ -106,8 +115,8 @@ io.on("connection", (socket) => {
         console.log(`${sessions[id][player]} `);
         socket.to(id).emit("PLAYER_CONNECTED", player, device);
         if (sessions[id].player1.device && sessions[id].player2.device)
-            console.log(id, 'Players ready \n');
-        socket.to(id).emit("READY_TO_START");
+            console.log(id, "Players ready \n");
+        socket.to(sessions[id].host).emit("READY_TO_START");
     });
     socket.on("UPDATE_LOCAL", (id) => {
         sessions[id].local = !sessions[id].local;
@@ -115,6 +124,10 @@ io.on("connection", (socket) => {
         if (sessions[id].local && sessions[id].guest) {
             socket.to(sessions[id].guest).emit("HOST_DISCONNECTED");
         }
+    });
+    socket.on("STARTING_GAME", (id) => {
+        console.log(`Room ${id} starting game \n`);
+        socket.to(id).emit("START_GAME");
     });
     socket.on("MOVE_PADDLE", (id, direction, player) => {
         console.log("MOVINIG", { player, id, direction });

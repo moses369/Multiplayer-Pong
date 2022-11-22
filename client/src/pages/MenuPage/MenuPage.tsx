@@ -2,12 +2,12 @@ import { useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux";
-import { leaveSession, setPlayer } from "../../redux/features/menu-slice";
+import { leaveSession, isController } from "../../redux/features/menu-slice";
 
 import Menu from "../../components/MenuPage/Menu/Menu";
 import Lobby from "../../components/MenuPage/Lobby/Lobby";
 
-import './MenuPage.css'
+import "./MenuPage.css";
 
 const MenuPage = () => {
   const dispatch = useDispatch();
@@ -35,13 +35,13 @@ const MenuPage = () => {
 
   useEffect(() => {
     socket.on("CONNECT_MOBILE", (player: "player1" | "player2") => {
-      dispatch(setPlayer(player));
+      dispatch(isController(player));
+
       navigate("/controller");
     });
   }, [socket]);
   return (
-    <div className="menu" >
-
+    <div className="menu">
       <h1>PONG</h1>
       {!inSession ? <Menu /> : <Lobby leave={leave} />}
     </div>

@@ -7,15 +7,16 @@ interface ChoosePlayerProps {
   playerNum: 1 | 2;
 }
 const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
-  const { sessionId, socket, player, mobileCode,local } = useSelector(
+  const { sessionId, socket, player, mobileCode, local } = useSelector(
     ({
-      menu: { sessionId, player, mobileCode,local },
+      menu: { sessionId, player, mobileCode, local },
       socket: { socket },
     }: RootState) => ({
       sessionId,
       socket,
       player,
-      mobileCode,local
+      mobileCode,
+      local,
     })
   );
 
@@ -26,18 +27,26 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
   const devices = { mobile: "mobile", keys: "keyboard" };
   const accessDeviceSelected = () => deviceSelected[`player${playerNum}`];
 
-  const connectPlayer = (device: string) => {
+  const connectKeys = () => {
     if (playerNum === parseInt(player[6]) || local) {
-      !local && socket.emit("CONNECT_PLAYER", sessionId, player, device);
-      setDeviceSelected((old) => ({ ...old, [`player${playerNum}`]: device }));
+      !local && socket.emit("CONNECT_PLAYER", sessionId, player, devices.keys);
+      setDeviceSelected((old) => ({ ...old, [`player${playerNum}`]: devices.keys }));
     }
   };
 
   useEffect(() => {
-    socket.on("PLAYER_CONNECTED", (player, device) => {
-      console.log(player, device);
+    socket.on("PLAYER_CONNECTED", (playerConnected, device) => {
+      console.log(playerConnected, "connected", device);
 
-      setDeviceSelected((old) => ({ ...old, [player]: device }));
+      setDeviceSelected((old) => ({ ...old, [playerConnected]: device }));
+    });
+    socket.on("MOBILE_DISCONNECT", (player1Device, player2Device) => {
+      if (deviceSelected.player1 !== player1Device) {
+        setDeviceSelected((old) => ({ ...old, player1: player1Device }));
+      }
+      if (deviceSelected.player2 !== player2Device) {
+        setDeviceSelected((old) => ({ ...old, player2: player2Device }));
+      }
     });
   }, [socket]);
   const active = (device: string) => ({
@@ -52,15 +61,11 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
       </p>
       <button
         style={active(devices.keys)}
-        onClick={() => connectPlayer(devices.keys)}
+        onClick={() => connectKeys()}
       >
         Keyboard
       </button>
-      <button
-        style={active(devices.mobile)}
-      >
-        Mobile
-      </button>
+      <button style={active(devices.mobile)}>Mobile</button>
       <p>Enter code in Join Session {mobileCode[`player${playerNum}`]}</p>
     </div>
   );

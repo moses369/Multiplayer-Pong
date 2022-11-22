@@ -14,17 +14,19 @@ export interface MenuState {
   player: "player1" | "player2";
   inSession: boolean;
   mobileCode: MobileCodes;
-  startGame: boolean;
+  isMobile:boolean;
+
 }
 
 const initialState: MenuState = {
   host: false,
   local:false,
+  isMobile:false,
   sessionId: "",
   player: "player1",
   inSession: false,
   mobileCode: { player1: "", player2: "" },
-  startGame: false,
+
 };
 interface SessionInfo {
   sessionId: string;
@@ -55,22 +57,21 @@ export const menuSlice = createSlice({
       state.inSession = false;
       state.host = false;
       state.player = "player1";
-      state.startGame = false;
+  
     },
-    setPlayer(state, action: PayloadAction<"player1" | "player2">) {
-      state.player = action.payload;
-    },
-    startGame(state) {
-      state.startGame = true;
-    },
+ 
     setLocal(state){
       state.local = !state.local
+    },
+    isController(state,action: PayloadAction<"player1" | "player2">){
+      state.isMobile = true
+      state.player = action.payload;
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { createSession, joinSession, leaveSession, setPlayer, startGame, setLocal } =
+export const { createSession, joinSession, leaveSession, setLocal,isController } =
   menuSlice.actions;
 
 export default menuSlice.reducer;
