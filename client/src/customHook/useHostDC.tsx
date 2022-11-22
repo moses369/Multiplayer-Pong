@@ -6,15 +6,15 @@ import { RootState } from "../redux";
 import { leaveSession } from "../redux/features/menu-slice";
 
 const useHostDC = () => {
-    
   const dispatch = useDispatch();
-  const { socket } = useSelector((state: RootState) => ({
+  const { socket, sessionId } = useSelector((state: RootState) => ({
     socket: state.socket.socket,
+    sessionId: state.menu.sessionId,
   }));
   useEffect(() => {
     socket.on("HOST_DISCONNECTED", () => {
-        console.log('host disconected');
-        
+      console.log("host disconected");
+      sessionId && socket.emit("LEAVE_SESSION", sessionId);
       dispatch(leaveSession());
     });
   }, [socket]);

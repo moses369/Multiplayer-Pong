@@ -6,7 +6,19 @@ const app = express();
 const { PORT } = process.env;
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+const randomChar = () => {
+    //Getting a random char from using utf-16
+    const min = 65;
+    const max = 89;
+    return String.fromCharCode(Math.floor(Math.random() * (max - min + 1) + min));
+};
+const randomId = () => `${randomChar()}${randomChar()}${randomChar()}${randomChar()}`;
+const createMobileCode = (id) => `${id}${Math.floor(Math.random() * 100)}`;
 const sessions = {};
+const checkIdIsNotTaken = () => {
+    const generatedId = randomId();
+    return !sessions[generatedId] ? generatedId : checkIdIsNotTaken();
+};
 io.on("connection", (socket) => {
     /**Check for empty sessions */
     setInterval(() => {
@@ -23,51 +35,86 @@ io.on("connection", (socket) => {
             }
         }
     }, 5_000);
-    socket.on("CREATE_SESSION", (id, { player1, player2 }) => {
-        socket.join(id);
-        const player = (code) => ({ device: "", mobileCode: code });
-        sessions[id] = {
-            player1: player(player1),
-            player2: player(player2),
+    socket.on("CREATE_SESSION", (sendIdsBack) => {
+        const generatedId = checkIdIsNotTaken();
+        const player = () => ({
+            device: "",
+            mobileCode: createMobileCode(generatedId),
+        });
+        sessions[generatedId] = {
+            player1: player(),
+            player2: player(),
             host: socket.id,
+            guest: "",
+            local: false,
         };
-        console.log(` created session ${id}`, sessions[id]);
-        console.log(io.sockets.adapter.rooms.get(id), "\n");
+        const mobileCode = {
+            player1: sessions[generatedId].player1.mobileCode,
+            player2: sessions[generatedId].player2.mobileCode,
+        };
+        sendIdsBack(generatedId, mobileCode);
+        socket.join(generatedId);
+        console.log(` created session ${generatedId}`, sessions[generatedId]);
+        console.log(io.sockets.adapter.rooms.get(generatedId), "\n");
     });
     socket.on("JOIN_SESSION", (id, callback) => {
         const sessionID = id.substring(0, 4);
-        const mobileCode = id.substring(6);
         const session = sessions[sessionID];
-        callback(!!session, {
+        callback(!!session
+            ? !session.local || (session.local && id.length > 4)
+                ? true
+                : false
+            : false, {
             player1: session?.player1.mobileCode,
             player2: session?.player2.mobileCode,
         });
-        if (session) {
-            console.log(` joined session ${id}`, session);
-            console.log(session.player1.mobileCode === id);
-            console.log(session.player2.mobileCode === id);
-            socket.join(id);
+        if (session || (sessions[sessionID].local && id.length > 4)) {
+            sessionID.length === 4 && (sessions[sessionID].guest = socket.id);
+            socket.join(sessionID);
+            console.log(` joined session ${sessionID}`, session);
             session.player1.device &&
-                socket.emit("PLAYER_CONNECTED", 'player1', session.player1.device);
+                socket.emit("PLAYER_CONNECTED", "player1", session.player1.device);
             session.player2.device &&
-                socket.emit("PLAYER_CONNECTED", 'player2', session.player2.device);
-            console.log(io.sockets.adapter.rooms.get(id), "\n");
+                socket.emit("PLAYER_CONNECTED", "player2", session.player2.device);
+            if (session.player1.mobileCode === id) {
+                socket.emit("CONNECT_MOBILE", "player1");
+                socket.to(sessionID).emit("PLAYER_CONNECTED", "player1", "mobile");
+            }
+            else if (session.player2.mobileCode === id) {
+                socket.emit("CONNECT_MOBILE", "player2");
+                socket.to(sessionID).emit("PLAYER_CONNECTED", "player2", "mobile");
+            }
+            console.log(io.sockets.adapter.rooms.get(sessionID), "\n");
         }
     });
     socket.on("LEAVE_SESSION", (id) => {
         socket.leave(id);
         console.log(`${socket.id} left room ${id}`, io.sockets.adapter.rooms.get(id));
-        socket.id === sessions[id]?.host ||
-            (!io.sockets.adapter.rooms.get(id) && delete sessions[id]);
-        console.log(`${socket.id === sessions[id]?.host || !io.sockets.adapter.rooms.get(id)
+        if (socket.id === sessions[id].host || !io.sockets.adapter.rooms.get(id)) {
+            socket.to(sessions[id].guest).emit("HOST_DISCONNECTED", () => {
+                io.socketsLeave(id);
+                delete sessions[id];
+            });
+        }
+        console.log(`${socket.id === sessions[id].host || !io.sockets.adapter.rooms.get(id)
             ? "deleted"
             : "left"} room ${id} \n`);
     });
     socket.on("CONNECT_PLAYER", (id, player, device) => {
         sessions[id][player].device = device;
         console.log(`${id} room ${player} connected to ${device}`);
-        console.log(`${sessions[id][player]} \n`);
+        console.log(`${sessions[id][player]} `);
         socket.to(id).emit("PLAYER_CONNECTED", player, device);
+        if (sessions[id].player1.device && sessions[id].player2.device)
+            console.log(id, 'Players ready \n');
+        socket.to(id).emit("READY_TO_START");
+    });
+    socket.on("UPDATE_LOCAL", (id) => {
+        sessions[id].local = !sessions[id].local;
+        console.log("Changed local setting to ", sessions[id].local, "\n");
+        if (sessions[id].local && sessions[id].guest) {
+            socket.to(sessions[id].guest).emit("HOST_DISCONNECTED");
+        }
     });
     socket.on("MOVE_PADDLE", (id, direction, player) => {
         console.log("MOVINIG", { player, id, direction });

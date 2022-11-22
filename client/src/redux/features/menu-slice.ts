@@ -1,35 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Socket } from "socket.io-client";
-const randomChar = () => {
-  //Getting a random char from using utf-16
-  const min = 65;
-  const max = 89;
-  return String.fromCharCode(Math.floor(Math.random() * (max - min + 1) + min));
-}
+import { stat } from "fs";
 
-const createMobileCode = (letter: string) =>
-  `${letter}${Math.floor(Math.random() * 100)}`;
 export interface MobileCodes {
   player1: string;
   player2: string;
 }
 export interface MenuState {
   host: boolean;
+  local:boolean;
   sessionId: string;
-  player:  'player1' | 'player2';
+  player: "player1" | "player2";
   inSession: boolean;
   mobileCode: MobileCodes;
+  startGame: boolean;
 }
 
 const initialState: MenuState = {
   host: false,
+  local:false,
   sessionId: "",
-  player: 'player1',
+  player: "player1",
   inSession: false,
   mobileCode: { player1: "", player2: "" },
+  startGame: false,
 };
-interface JoinSession {
+interface SessionInfo {
   sessionId: string;
   mobileCodes: MobileCodes;
 }
@@ -37,44 +34,43 @@ export const menuSlice = createSlice({
   name: "menu-slice",
   initialState,
   reducers: {
-    createSession(state, action: PayloadAction<Socket>) {
-      
-      const generatedId = `${randomChar()}${randomChar()}${randomChar()}${randomChar()}`;
-      const mobileCodes:MobileCodes = {
-        player1: createMobileCode(generatedId),
-        player2: createMobileCode(generatedId),
-      };
+    createSession(state, { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>) {
       state.host = true;
-      state.sessionId = generatedId;
       state.inSession = true;
+      state.sessionId = sessionId
       state.mobileCode = mobileCodes;
-      action.payload.emit("CREATE_SESSION", generatedId, {
-        player1: mobileCodes.player1,
-        player2: mobileCodes.player2,
-      });
     },
 
     joinSession(
       state,
-      { payload: { sessionId, mobileCodes } }: PayloadAction<JoinSession>
+      { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>
     ) {
-      state.player='player2'
-      state.sessionId = sessionId;
+      state.player = "player2";
+      state.sessionId = sessionId.substring(0, 4);
       state.inSession = true;
-      state.mobileCode = mobileCodes
+      state.mobileCode = mobileCodes;
     },
     leaveSession(state) {
       state.sessionId = "";
       state.inSession = false;
       state.host = false;
-      state.player = 'player1';
+      state.player = "player1";
+      state.startGame = false;
     },
-
+    setPlayer(state, action: PayloadAction<"player1" | "player2">) {
+      state.player = action.payload;
+    },
+    startGame(state) {
+      state.startGame = true;
+    },
+    setLocal(state){
+      state.local = !state.local
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { createSession, joinSession, leaveSession } =
+export const { createSession, joinSession, leaveSession, setPlayer, startGame, setLocal } =
   menuSlice.actions;
 
 export default menuSlice.reducer;
