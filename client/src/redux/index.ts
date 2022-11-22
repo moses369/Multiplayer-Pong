@@ -1,9 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import paddleReducer from "./features/paddle-slice";
 import socketReducer from "./features/socket-slice";
 import menuReducer from "./features/menu-slice";
 export const store = configureStore({
-  reducer: { paddle: paddleReducer, socket: socketReducer, menu: menuReducer },
+  reducer: { socket: socketReducer, menu: menuReducer },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

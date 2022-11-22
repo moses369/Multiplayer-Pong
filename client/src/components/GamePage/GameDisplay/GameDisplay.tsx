@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../redux";
-import { moveSocket, Rect } from "../../../redux/features/paddle-slice";
+
 
 import Ball from "../Ball/Ball";
 import Paddle from "../Padddle/Paddle";
@@ -9,10 +7,7 @@ import Paddle from "../Padddle/Paddle";
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
-  const dispatch = useDispatch();
-  const { socket } = useSelector(({ socket: { socket } }: RootState) => ({
-    socket,
-  }));
+
 
   const [start, setStart] = useState<boolean>(false);
 
@@ -23,31 +18,7 @@ const GameDisplay = () => {
       !start && setStart(true);
     }, 1000);
   }, [start]);
-  useEffect(() => {
-    socket.on(
-      "MOVING_PADDLE",
-      (direction: "up" | "down", player: "player1" | "player2") => {
-        const border: Rect = {
-          top: 0,
-          right: document?.body.clientWidth,
-          bottom: document?.body.clientHeight,
-          left: 0,
-        };
-        if (paddle1Ref.current && paddle2Ref.current) {
-          const paddle =
-            player === "player1" ? paddle1Ref.current : paddle2Ref.current;
-          dispatch(
-            moveSocket({
-              direction,
-              player,
-              border,
-              paddle,
-            })
-          );
-        }
-      }
-    );
-  }, [socket]);
+ 
 
   return (
     <>
