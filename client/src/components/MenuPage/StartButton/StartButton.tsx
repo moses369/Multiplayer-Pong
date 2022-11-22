@@ -33,16 +33,13 @@ const StartButton = () => {
     if (!host && !isMobile) {
       socket.on("START_GAME", () => {
         console.log("host started game");
-        if (!isMobile) {
-          console.log('start');
-          
-          navigate("/game");
-        }
+
+        navigate("/game");
       });
     } else {
       socket.removeListener("START_GAME");
     }
-  }, [socket, setAllReady, host]);
+  }, [socket, setAllReady, host, isMobile]);
   useEffect(() => {
     if (host) console.log(allReady);
   }, [allReady, host]);
