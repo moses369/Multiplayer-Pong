@@ -129,9 +129,9 @@ io.on("connection", (socket) => {
         console.log(`Room ${id} starting game \n`);
         socket.to(id).emit("START_GAME");
     });
-    socket.on("MOVE_PADDLE", (id, direction, player) => {
-        console.log("MOVINIG", { player, id, direction });
-        socket.to(id).emit("MOVING_PADDLE", direction, player);
+    socket.on("MOVE_PADDLE", (id, direction, player, stop) => {
+        console.log("MOVINIG", { player, id, direction, stop });
+        socket.to(id).emit("MOVING_PADDLE", direction, player, stop);
     });
 });
 server.listen(PORT, () => {

@@ -166,10 +166,10 @@ io.on("connection", (socket) => {
 
     socket.to(id).emit("START_GAME");
   });
-  socket.on("MOVE_PADDLE", (id, direction, player) => {
-    console.log("MOVINIG", { player, id, direction });
+  socket.on("MOVE_PADDLE", (id, direction, player, stop) => {
+    console.log("MOVINIG", { player, id, direction, stop });
 
-    socket.to(id).emit("MOVING_PADDLE", direction, player);
+    socket.to(id).emit("MOVING_PADDLE", direction, player, stop);
   });
 });
 server.listen(PORT, () => {
