@@ -1,66 +1,56 @@
-import { useRef, useEffect, useState,useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import "./Paddle.css";
+import { useRef, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
+import "./Paddle.css";
 
 interface PaddleProps {
   player: "player1" | "player2";
   paddleRef: React.RefObject<HTMLDivElement>;
 }
 const Paddle = ({ player, paddleRef }: PaddleProps) => {
-  const dispatch = useDispatch();
   const [playAnimation, setPlayAnimation] = useState<boolean>(false);
   const { socket } = useSelector(({ socket: { socket } }: RootState) => ({
     socket,
   }));
   const directionRef = useRef<string>("");
-  const animateID = useRef<NodeJS.Timer | null>(null);
-  const play = useRef<boolean>(false);
+  const animateID = useRef<number>(0);
+  const moveDistance = useRef<number>(1);
+  const paddle = paddleRef.current;
 
   const animate = () => {
-    const delta = 1;
-    if (paddleRef.current && document) {
-      const paddle = paddleRef.current;
+    const delta = 10;
+    if (paddle && document) {
       const rects = {
-        paddle: paddleRef.current.getBoundingClientRect(),
+        paddle: {
+          top: paddle.getBoundingClientRect().top,
+          bottom: paddle.getBoundingClientRect().bottom,
+        },
         border: { bottom: document.body.clientHeight },
       };
+      const updateMove = (delta: number): number =>
+        (moveDistance.current += delta);
 
       if (directionRef.current === "up" && rects.paddle.top > 0) {
-        console.log("up");
-
-        // paddle.style.transform = `translateY(${-delta}px)`;
-        paddle.style.top = `${rects.paddle.top - delta}px`;
+        updateMove(-delta);
       } else if (
         directionRef.current === "down" &&
         rects.paddle.bottom < rects.border.bottom
       ) {
-        console.log("down");
-        paddle.style.top = `${rects.paddle.top + delta}px`;
-        // paddle.style.transform = `translateY(${delta}px)`;
+        updateMove(delta);
       }
+      const yOffset = moveDistance.current;
+      paddle.style.transform = `translateY(${yOffset}px)`;
 
-    //  animateID.current = requestAnimationFrame(animate)
+      animateID.current = requestAnimationFrame(animate);
     }
   };
-  const moving = useCallback(
-    () =>
-      setInterval(() => {
-        animate();
-      }, 100),
-    []
-  );
+
   useEffect(() => {
-if(playAnimation){
-  console.log('move');
-  // animateID.current = requestAnimationFrame(animate)
-  animateID.current = moving()
-  
-}else{
-  console.log('stop');
-  animateID.current && clearInterval(animateID.current)
-  // cancelAnimationFrame(animateID.current)
-}
+    if (playAnimation) {
+      animateID.current = requestAnimationFrame(animate);
+    } else {
+      cancelAnimationFrame(animateID.current);
+    }
   }, [playAnimation]);
 
   useEffect(() => {
@@ -74,9 +64,6 @@ if(playAnimation){
         if (playerMoved === player) {
           directionRef.current = direction;
           setPlayAnimation(move);
-          play.current = move
-
-          console.log("move", player, directionRef.current, move);
         }
       }
     );

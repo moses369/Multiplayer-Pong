@@ -1,12 +1,20 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import TransitionGroup from "react-transition-group/TransitionGroup";
-import './Ball.css'
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux";
+import "./Ball.css";
 interface Props {
   paddle1: HTMLDivElement | null;
   paddle2: HTMLDivElement | null;
-  setStart: any;
+  resetRound: any;
 }
-const Ball = ({ paddle1, paddle2, setStart }: Props) => {
+const Ball = ({ paddle1, paddle2, resetRound }: Props) => {
+  const { socket, sessionId } = useSelector(
+    ({ socket: { socket }, menu: { sessionId } }: RootState) => ({
+      socket,
+      sessionId,
+    })
+  );
+  const [playAnimation, setPlayAnimation] = useState<boolean>(true);
   const pongRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef<{ x: number; y: number }>({ x: 10, y: 10 });
   const reverseRef = useRef<{ x: boolean; y: boolean; paddle: boolean }>({
@@ -14,16 +22,14 @@ const Ball = ({ paddle1, paddle2, setStart }: Props) => {
     y: false,
     paddle: false,
   });
-  const animateRef = useRef<{ start: boolean; id: number }>({
-    start: true,
-    id: 0,
-  });
+  const animateRef = useRef<number>(0);
 
   const pong = pongRef.current;
 
-
   const animate = () => {
     if (pong && paddle1 && paddle2) {
+      console.log("moving");
+
       const rects = {
         pong: pong.getBoundingClientRect(),
         border: {
@@ -86,20 +92,36 @@ const Ball = ({ paddle1, paddle2, setStart }: Props) => {
         updateMove("y", -move.delta);
       }
 
-      animateRef.current.id = requestAnimationFrame(animate);
+      animateRef.current = requestAnimationFrame(animate);
       if (rects.pong.x < 0 || rects.pong.x > rects.border.right) {
         console.log("reset");
 
-        cancelAnimationFrame(animateRef.current.id);
-        animateRef.current.start = false;
-        setStart(false);
+        setPlayAnimation(false);
       }
     }
-  }
-  useEffect(() => {
-    animateRef.current.start && animate();
+  };
 
-  }, [animate]);
+  useEffect(() => {
+    socket.on("MOVE_BALL", () => {
+      setTimeout(() => {
+        console.log("Play now");
+
+        setPlayAnimation(true);
+      }, 1000);
+    });
+  }, [socket, setPlayAnimation]);
+  useEffect(() => {
+    console.log("playAnimation", playAnimation);
+
+    if (playAnimation) {
+      console.log("paly");
+
+      animateRef.current = requestAnimationFrame(animate);
+    } else {
+      resetRound();
+      cancelAnimationFrame(animateRef.current);
+    }
+  }, [playAnimation]);
 
   return <div className="pong" ref={pongRef}></div>;
 };

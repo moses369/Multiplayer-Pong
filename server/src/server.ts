@@ -3,6 +3,7 @@ import cors from "cors";
 import http from "http";
 import "dotenv/config";
 import { Server } from "socket.io";
+import { Socket } from "dgram";
 const app: express.Application = express();
 const { PORT } = process.env;
 
@@ -166,6 +167,9 @@ io.on("connection", (socket) => {
 
     socket.to(id).emit("START_GAME");
   });
+socket.on('PLAY_BALL',() => {
+  socket.emit('MOVE_BALL')
+})
   socket.on("MOVE_PADDLE", (id, direction, player, stop) => {
     console.log("MOVINIG", { player, id, direction, stop });
 

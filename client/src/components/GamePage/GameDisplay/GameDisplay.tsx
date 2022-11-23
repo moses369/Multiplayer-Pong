@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux";
 
 import Ball from "../Ball/Ball";
 import Paddle from "../Padddle/Paddle";
@@ -7,18 +8,36 @@ import Paddle from "../Padddle/Paddle";
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
-
-
-  const [start, setStart] = useState<boolean>(false);
+  const { socket,sessionId } = useSelector(({ socket: { socket } , menu:{sessionId}}: RootState) => ({
+    socket,sessionId
+  }));
+  const [start, setStart] = useState<boolean>(true);
 
   const paddle1Ref = useRef<HTMLDivElement>(null);
   const paddle2Ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    setTimeout(() => {
-      !start && setStart(true);
-    }, 1000);
-  }, [start]);
- 
+useEffect(() =>{
+if(start){
+  console.log('Play Ball');
+  
+  socket.emit('PLAY_BALL')
+}
+},[start,socket])
+
+const resetRound = () => {
+  console.log('reset round');
+  
+  setStart(() => {
+    console.log('set start to false');
+    return false
+  })
+  setTimeout(()=>{
+    setStart(() => {
+      console.log('set start to false');
+      return true
+    })
+  },1000)
+}
+
 
   return (
     <>
@@ -29,7 +48,7 @@ const GameDisplay = () => {
             <Ball
               paddle1={paddle1Ref.current}
               paddle2={paddle2Ref.current}
-              setStart={setStart}
+              resetRound={resetRound}
             />
           )}
           <Paddle player={"player2"} paddleRef={paddle2Ref} />
