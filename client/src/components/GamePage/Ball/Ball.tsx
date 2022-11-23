@@ -3,17 +3,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
 import "./Ball.css";
 interface Props {
-  paddle1: HTMLDivElement | null;
-  paddle2: HTMLDivElement | null;
+  paddle1Ref: React.RefObject<HTMLDivElement>;
+  paddle2Ref: React.RefObject<HTMLDivElement>;
   resetRound: any;
 }
-const Ball = ({ paddle1, paddle2, resetRound }: Props) => {
-  const { socket, sessionId } = useSelector(
-    ({ socket: { socket }, menu: { sessionId } }: RootState) => ({
-      socket,
-      sessionId,
-    })
-  );
+const Ball = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const [playAnimation, setPlayAnimation] = useState<boolean>(true);
   const pongRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef<{ x: number; y: number }>({ x: 10, y: 10 });
@@ -24,12 +18,11 @@ const Ball = ({ paddle1, paddle2, resetRound }: Props) => {
   });
   const animateRef = useRef<number>(0);
 
-  const pong = pongRef.current;
-
-  const animate = () => {
-    if (pong && paddle1 && paddle2) {
-      console.log("moving");
-
+  const animate =() => {
+    if (pongRef.current && paddle2Ref.current && paddle1Ref.current) {
+      const paddle2 = paddle2Ref.current
+      const paddle1 = paddle1Ref.current
+      const pong = pongRef.current;
       const rects = {
         pong: pong.getBoundingClientRect(),
         border: {
@@ -99,23 +92,16 @@ const Ball = ({ paddle1, paddle2, resetRound }: Props) => {
         setPlayAnimation(false);
       }
     }
-  };
+  }
 
   useEffect(() => {
-    socket.on("MOVE_BALL", () => {
-      setTimeout(() => {
-        console.log("Play now");
-
-        setPlayAnimation(true);
-      }, 1000);
-    });
-  }, [socket, setPlayAnimation]);
+    setTimeout(() => {
+      setPlayAnimation(true);
+    }, 1000);
+    // });
+  }, [setPlayAnimation]);
   useEffect(() => {
-    console.log("playAnimation", playAnimation);
-
     if (playAnimation) {
-      console.log("paly");
-
       animateRef.current = requestAnimationFrame(animate);
     } else {
       resetRound();

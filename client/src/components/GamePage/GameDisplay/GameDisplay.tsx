@@ -8,36 +8,38 @@ import Paddle from "../Padddle/Paddle";
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
-  const { socket,sessionId } = useSelector(({ socket: { socket } , menu:{sessionId}}: RootState) => ({
-    socket,sessionId
-  }));
+  const { socket, sessionId } = useSelector(
+    ({ socket: { socket }, menu: { sessionId } }: RootState) => ({
+      socket,
+      sessionId,
+    })
+  );
   const [start, setStart] = useState<boolean>(true);
 
   const paddle1Ref = useRef<HTMLDivElement>(null);
   const paddle2Ref = useRef<HTMLDivElement>(null);
-useEffect(() =>{
-if(start){
-  console.log('Play Ball');
-  
-  socket.emit('PLAY_BALL')
-}
-},[start,socket])
+  // useEffect(() => {
+  //   if (start) {
+  //     console.log("Play Ball");
 
-const resetRound = () => {
-  console.log('reset round');
-  
-  setStart(() => {
-    console.log('set start to false');
-    return false
-  })
-  setTimeout(()=>{
+  //     socket.emit("PLAY_BALL");
+  //   }
+  // }, [start, socket]);
+
+  const resetRound = () => {
+    console.log("reset round");
+
     setStart(() => {
-      console.log('set start to false');
-      return true
-    })
-  },1000)
-}
-
+      console.log("set start to false");
+      return false;
+    });
+    setTimeout(() => {
+      setStart(() => {
+        console.log("set start to false");
+        return true;
+      });
+    }, 1000);
+  };
 
   return (
     <>
@@ -46,8 +48,8 @@ const resetRound = () => {
           <Paddle player={"player1"} paddleRef={paddle1Ref} />
           {start && (
             <Ball
-              paddle1={paddle1Ref.current}
-              paddle2={paddle2Ref.current}
+              paddle1Ref={paddle1Ref}
+              paddle2Ref={paddle2Ref}
               resetRound={resetRound}
             />
           )}

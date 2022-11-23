@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import socketReducer from "./features/socket-slice";
 import menuReducer from "./features/menu-slice";
+
 export const store = configureStore({
   reducer: { socket: socketReducer, menu: menuReducer },
   middleware: (getDefaultMiddleware) =>
