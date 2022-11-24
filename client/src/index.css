@@ -1,11 +1,76 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
---piece-color:#579fb4
-
+  --piece-color: #579fb4;
+  --primary-background: #002439;
+  --primary-text: #579fb4;
+  --white-glow: hsl(0 0% 100% / 0.3);
 }
-*{
+* {
   box-sizing: border-box;
+  outline: none;
   margin: 0;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.noEvents{
+  pointer-events: none;
+}
+.neonButton {
+  font-size: 1.25rem;
+
+  display: inline-block;
+  cursor: pointer;
+  background: transparent;
+  width: fit-content;
+  height: fit-content;
+  padding: 0.5em 1em;
+
+  position: relative;
+}
+
+
+.neonButton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--piece-color);
+
+  box-shadow: 0 0 2em 0.5em var(--piece-color);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 100ms linear;
+}
+.neonButton:hover::after,
+.neonButton:focus::after,
+.neonButton:hover::before,
+.neonButton:focus::before {
+  opacity: 1;
+}
+
+.neonButton:hover,
+.neonButton:focus {
+  color: var(--primary-background);
+  text-shadow: 0;
+}
+
+
+.neonText {
+  color: var(--primary-text);
+  text-shadow: 0 0 0.12em var(--white-glow), 0 0 0.4em currentColor;
+  letter-spacing: 0.07em;
+}
+.neonBorder {
+  border: var(--primary-text) 0.125em solid;
+  border-radius: 0.25em;
+  box-shadow: inset 0 0 0.5em 0 var(--primary-text),
+    0 0 0.5em 0 var(--primary-text);
 }
 
 

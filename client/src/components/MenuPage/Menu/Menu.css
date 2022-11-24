@@ -1,0 +1,40 @@
+.join_container {
+  width: 100%;
+  padding: 0 10%;
+  align-items: center;
+}
+
+.formInput {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  text-align: center;
+}
+
+input {
+  font-size: 1rem;
+
+  padding: 0.7em 0;
+  margin-top: 0.5em;
+  background: inherit;
+  text-align: center;
+
+  transition: box-shadow 100ms linear;
+}
+
+#joinLabel {
+  position: relative;
+  font-size: 1.5rem;
+  transition: text-shadow 100ms linear      ;
+}
+
+input:focus,
+input:hover {
+  box-shadow: inset 0 0 0.75em 0 var(--primary-text),
+    0 0 0.75em 0.2em var(--primary-text);
+}
+input:focus + label > h3,
+input:hover + label > h3 {
+    text-shadow: 0 0 0.12em var(--white-glow), 0 0 0.4em currentColor,
+    0 0 0.7em currentColor;
+}

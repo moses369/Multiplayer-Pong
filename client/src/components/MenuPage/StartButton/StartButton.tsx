@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux";
 
+import './StartButton.css'
 const StartButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const StartButton = () => {
       socket.emit("STARTING_GAME", sessionId);
     }
   };
-  return <button onClick={start}>Start</button>;
+  return <button id="start" className=" neonButton neonText neonBorder" onClick={start}>Start</button>;
 };
 
 export default StartButton;

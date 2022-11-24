@@ -1,9 +1,34 @@
 .menu {
-  background: #160712;
+  background-image: linear-gradient(
+    to bottom,
+    #051937,
+    #041b35,
+    #051c32,
+    #081d2f,
+    #0c1e2c
+  );
   width: 100vw;
   height: 100vh;
-  color: var(--piece-color);
+  color: #78cce2;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem;
 }
+#title {
+  font-size: 6rem;
+  cursor: default;
+  position: relative;
+  margin-bottom: .5em;
+  color: var(--primary-background);
+  letter-spacing: 0.125em;
+  -webkit-text-stroke: .0125em var(--primary-text);
+  text-shadow: 0 0 0.125em var(--white-glow), 0 0 0.22em var(--primary-text),
+  0 0 0.5em var(--primary-text), 0 0 .7em var(--primary-text);
+}
+
+
+
+
+
+

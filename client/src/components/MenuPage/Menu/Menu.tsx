@@ -7,6 +7,8 @@ import {
   MobileCodes,
 } from "../../../redux/features/menu-slice";
 
+import "./Menu.css";
+
 const Menu = () => {
   const dispatch = useDispatch();
 
@@ -36,31 +38,37 @@ const Menu = () => {
   };
   return (
     <>
-      <div>
-        <div>
-          <button
-            onClick={() => {
-              socket.emit(
-                "CREATE_SESSION",
-                (id: string, mobileCodes: MobileCodes) => {
-                  dispatch(createSession({ sessionId: id, mobileCodes }));
-                }
-              );
-            }}
-          >
-            <h3>Create Game</h3>
-          </button>
-        </div>
-        <div>
-          <h3>Join Game</h3>
-          <label htmlFor="join">Insert Password</label>
+      <div className="row join_container">
+        <button
+          className="neonButton neonText neonBorder"
+          onClick={() => {
+            socket.emit(
+              "CREATE_SESSION",
+              (id: string, mobileCodes: MobileCodes) => {
+                dispatch(createSession({ sessionId: id, mobileCodes }));
+              }
+            );
+          }}
+        >
+          <h3>Create Game</h3>
+        </button>
+
+        <div className="formInput neonText">
           <input
+          className="neonBorder neonText"
             type="text"
             name="join"
+            placeholder="Session ID"
+            autoComplete="off"
+            maxLength={6}
             value={joinVal}
             onChange={handleChange}
             onKeyDown={submitSessionID}
           />
+          <label  htmlFor="join">
+            <h3 id='joinLabel'>Join Game</h3>
+          </label>
+
           {error && <p>Session Not Found</p>}
         </div>
       </div>

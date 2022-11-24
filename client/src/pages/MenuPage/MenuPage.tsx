@@ -41,8 +41,8 @@ const MenuPage = () => {
     });
   }, [socket]);
   return (
-    <div className="menu">
-      <h1>PONG</h1>
+    <div className="menu neonText">
+      <h1 id="title" >PONG</h1>
       {!inSession ? <Menu /> : <Lobby leave={leave} />}
     </div>
   );
