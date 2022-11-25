@@ -1,0 +1,54 @@
+.mobileIndicator {
+  width: 6rem;
+  height: 10rem;
+  position: relative;
+  border-radius: 0.5em;
+}
+.mobileIndicator::before {
+  content: "";
+  position: absolute;
+  bottom: 1em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1em;
+  height: 1em;
+  border: var(--primary-text) 0.125em solid;
+  border-radius: 1em;
+  box-shadow: inset 0 0 0.5em 0 var(--primary-text),
+    0 0 0.5em 0 var(--primary-text);
+  transition: border 100ms linear;
+}
+.mobileIndicator > span {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.mobileIndicator::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0em;
+  left: 0;
+  right: 0;
+  background-color: var(--primary-text);
+  box-shadow: inset 0 0 0.5em 0 var(--primary-text),
+    0 0 0.5em 0 var(--white-glow), 0 0 1em 0 var(--primary-text),
+    0 0 2em 0 var(--primary-text);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 100ms linear;
+}
+
+.active.mobileIndicator {
+  color: var(--primary-background);
+  text-shadow: none;
+}
+.active.mobileIndicator::after {
+  opacity: 1;
+}
+.active.mobileIndicator::before {
+  border: var(--primary-background) 0.125em solid;
+  box-shadow: none;
+}

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
 import { MobileCodes } from "../../../redux/features/menu-slice";
+import { AiOutlineMobile } from "react-icons/ai";
 
+import './ChoosePlayer.css'
 interface ChoosePlayerProps {
   playerNum: 1 | 2;
 }
@@ -49,9 +51,8 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
       }
     });
   }, [socket]);
-  const active = (device: string) => ({
-    border: accessDeviceSelected() === device ? "1px solid red" : "",
-  });
+  const active = (device: string) => accessDeviceSelected() === device && 'active'
+  ;
   return (
     <div>
       <h3>{`Player ${playerNum}`}</h3>
@@ -60,13 +61,13 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
         {accessDeviceSelected() && `Selected`}
       </p>
       <button
-        style={active(devices.keys)}
+       
         onClick={() => connectKeys()}
       >
         Keyboard
       </button>
-      <button style={active(devices.mobile)}>Mobile</button>
-      <p>Enter code in Join Session {mobileCode[`player${playerNum}`]}</p>
+      <div  className={`mobileIndicator neonBorder ${active(devices.mobile)}`} ><span id="mobileText">{mobileCode[`player${playerNum}`]}</span></div>
+      <p>Enter code in Join Session </p>
     </div>
   );
 };

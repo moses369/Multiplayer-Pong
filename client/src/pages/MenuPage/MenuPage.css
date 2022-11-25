@@ -19,7 +19,7 @@
   font-size: 6rem;
   cursor: default;
   position: relative;
-  margin-bottom: .5em;
+  margin-bottom: .25em;
   color: var(--primary-background);
   letter-spacing: 0.125em;
   -webkit-text-stroke: .0125em var(--primary-text);
