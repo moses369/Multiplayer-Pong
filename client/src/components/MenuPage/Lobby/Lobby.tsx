@@ -34,7 +34,7 @@ const Lobby = ({ leave }: Lobby) => {
           <>
             <SessionID />
             <button
-              className="neonButton neonText neonBorder"
+              className="neonButton neonText neonBorder changeSatusBtn"
               onClick={() => {
                 socket.emit("UPDATE_LOCAL", sessionId);
                 dispatch(setLocal());

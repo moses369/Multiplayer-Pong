@@ -109,7 +109,7 @@ const Ball = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     }
   }, [playAnimation]);
 
-  return <div className="pong" ref={pongRef}></div>;
+  return <div className="pong neonBorder" ref={pongRef}></div>;
 };
 
 export default Ball;

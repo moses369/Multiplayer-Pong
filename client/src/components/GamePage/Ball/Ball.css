@@ -4,7 +4,7 @@
     width: 1.5rem;
     height: 1.5rem;
     border-radius: 50%;
-  
+  border: none !important;
     position: absolute;
     left: 27%;
     z-index: 5;

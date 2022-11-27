@@ -2,6 +2,9 @@
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
+
+import'./TouchPoint.css'
+
 interface Props {
   direction: "up" | "down";
   Arrow: React.ReactNode;
@@ -17,6 +20,7 @@ const TouchPoint = ({ direction, Arrow }: Props) => {
   );
   return (
     <button
+    className="neonButton neonBorder neonText touchPoint"
       onTouchStart={(e) => {
        
         socket.emit("MOVE_PADDLE", sessionId, direction, player,true);

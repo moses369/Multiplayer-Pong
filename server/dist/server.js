@@ -35,6 +35,9 @@ io.on("connection", (socket) => {
             }
         }
     }, 5_000);
+    socket.on('disconnect', () => {
+        console.log('room dced from', socket, '\n');
+    });
     socket.on("CREATE_SESSION", (sendIdsBack) => {
         const generatedId = checkIdIsNotTaken();
         const player = () => ({

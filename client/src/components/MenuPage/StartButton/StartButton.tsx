@@ -31,6 +31,8 @@ const StartButton = () => {
     socket.on("MOBILE_DISCONNECT", () => {
       setAllReady(false);
     });
+    console.log(!host && !isMobile);
+    
     if (!host && !isMobile) {
       socket.on("START_GAME", () => {
         console.log("host started game");

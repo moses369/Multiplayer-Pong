@@ -54,6 +54,7 @@ const Menu = () => {
         </button>
 
         <div className="formInput neonText">
+          {error && <p>Session Not Found</p>}
           <input
           className="neonBorder neonText"
             type="text"
@@ -69,7 +70,6 @@ const Menu = () => {
             <h3 id='joinLabel'>Join Game</h3>
           </label>
 
-          {error && <p>Session Not Found</p>}
         </div>
       </div>
     </>

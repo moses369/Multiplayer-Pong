@@ -9,24 +9,24 @@ export interface MobileCodes {
 }
 export interface MenuState {
   host: boolean;
-  local:boolean;
+  local: boolean;
   sessionId: string;
   player: "player1" | "player2";
   inSession: boolean;
   mobileCode: MobileCodes;
-  isMobile:boolean;
-
+  isMobile: boolean;
+  deviceSelected: MobileCodes;
 }
 
 const initialState: MenuState = {
   host: false,
-  local:false,
-  isMobile:false,
+  local: false,
+  isMobile: false,
   sessionId: "",
   player: "player1",
   inSession: false,
   mobileCode: { player1: "", player2: "" },
-
+  deviceSelected: { player1: "", player2: "" },
 };
 interface SessionInfo {
   sessionId: string;
@@ -36,10 +36,13 @@ export const menuSlice = createSlice({
   name: "menu-slice",
   initialState,
   reducers: {
-    createSession(state, { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>) {
+    createSession(
+      state,
+      { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>
+    ) {
       state.host = true;
       state.inSession = true;
-      state.sessionId = sessionId
+      state.sessionId = sessionId;
       state.mobileCode = mobileCodes;
     },
 
@@ -57,21 +60,33 @@ export const menuSlice = createSlice({
       state.inSession = false;
       state.host = false;
       state.player = "player1";
-  
     },
- 
-    setLocal(state){
-      state.local = !state.local
+
+    setLocal(state) {
+      state.local = !state.local;
     },
-    isController(state,action: PayloadAction<"player1" | "player2">){
-      state.isMobile = true
+    isController(state, action: PayloadAction<"player1" | "player2">) {
+      state.isMobile = true;
       state.player = action.payload;
-    }
+    },
+    updateSelectedDevice(
+      state,
+      action: PayloadAction<{ player: "player1" | "player2"; device: "keyboard" | "mobile" }>
+    ) {
+      state.deviceSelected[`${action.payload.player}`] =
+        action.payload.device;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { createSession, joinSession, leaveSession, setLocal,isController } =
-  menuSlice.actions;
+export const {
+  createSession,
+  joinSession,
+  leaveSession,
+  setLocal,
+  isController,
+  updateSelectedDevice,
+} = menuSlice.actions;
 
 export default menuSlice.reducer;

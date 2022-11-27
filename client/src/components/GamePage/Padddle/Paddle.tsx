@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useKeyControls from "../../../customHook/useKeyControls";
 import { RootState } from "../../../redux";
 
 import "./Paddle.css";
@@ -17,7 +18,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
   const animateID = useRef<number>(0);
   const moveDistance = useRef<number>(1);
   const paddle = paddleRef.current;
-
+  useKeyControls(player, directionRef, setPlayAnimation);
   const animate = () => {
     const delta = 10;
     if (paddle && document) {
@@ -55,8 +56,6 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
   }, [playAnimation]);
 
   useEffect(() => {
-
-    
     socket.on(
       "MOVING_PADDLE",
       (
@@ -75,7 +74,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
   return (
     <div
       ref={paddleRef}
-      className={`paddle ${player === "player1" ? "left" : "right"}`}
+      className={`paddle ${player === "player1" ? "left" : "right"} neonBorder`}
     ></div>
   );
 };

@@ -8,9 +8,16 @@
     justify-content: space-between;
    
 }
+.lobbyNav{
+    font-size: 1.25rem;
+    margin-bottom: 1.2em;
+}
 
-
-.lobbyPlayer{
-    border: 1px solid paleturquoise;
+.row.lobbyPlayer{
+    justify-content: space-around;
     height: 75%;
+}
+
+.changeSatusBtn{
+    width: 5.5em;
 }
