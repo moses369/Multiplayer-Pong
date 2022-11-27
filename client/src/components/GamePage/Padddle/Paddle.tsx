@@ -19,6 +19,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
   const moveDistance = useRef<number>(1);
   const paddle = paddleRef.current;
   useKeyControls(player, directionRef, setPlayAnimation);
+  
   const animate = () => {
     const delta = 10;
     if (paddle && document) {

@@ -22,9 +22,12 @@ const useKeyControls: KeyControlProp = (
     })
   );
   const moveLogic = (direction: "up" | "down", move: boolean) => {
-    directionRef.current = direction;
-    setPlayAnimation(move);
-    !local && socket.emit("MOVE_PADDLE", sessionId, direction, player, move);
+    if (local) {
+      directionRef.current = direction;
+      setPlayAnimation(move);
+    } else {
+      socket.emit("MOVE_PADDLE", sessionId, direction, player, move,true);
+    }
   };
 
   const playerMove = (move: boolean, e: KeyboardEvent) => {

@@ -35,8 +35,8 @@ io.on("connection", (socket) => {
             }
         }
     }, 5_000);
-    socket.on('disconnect', () => {
-        console.log('room dced from', socket, '\n');
+    socket.on("disconnect", () => {
+        console.log("room dced from", socket, "\n");
     });
     socket.on("CREATE_SESSION", (sendIdsBack) => {
         const generatedId = checkIdIsNotTaken();
@@ -132,12 +132,13 @@ io.on("connection", (socket) => {
         console.log(`Room ${id} starting game \n`);
         socket.to(id).emit("START_GAME");
     });
-    socket.on('PLAY_BALL', () => {
-        socket.emit('MOVE_BALL');
+    socket.on("PLAY_BALL", () => {
+        socket.emit("MOVE_BALL");
     });
-    socket.on("MOVE_PADDLE", (id, direction, player, stop) => {
-        console.log("MOVINIG", { player, id, direction, stop });
-        socket.to(id).emit("MOVING_PADDLE", direction, player, stop);
+    socket.on("MOVE_PADDLE", (id, direction, player, move, keys) => {
+        console.log("MOVINIG", { player, id, direction, move });
+        socket.to(id).emit("MOVING_PADDLE", direction, player, move);
+        keys && socket.emit("MOVING_PADDLE", direction, player, move);
     });
 });
 server.listen(PORT, () => {
