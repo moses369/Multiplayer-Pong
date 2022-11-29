@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux";
+import {PlayerChoices} from '../util/types'
 interface KeyControlProp {
   (
-    player: "player1" | "player2",
+    player: PlayerChoices,
     directionRef: React.MutableRefObject<string>,
     setPlayAnimation: React.Dispatch<React.SetStateAction<boolean>>
   ): void;

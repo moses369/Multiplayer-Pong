@@ -2,16 +2,16 @@
 import { useCallback, useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
-
+import { DirectionChoices, PlayerChoices } from "../../../util/types";
 import'./TouchPoint.css'
 
 interface Props {
-  direction: "up" | "down";
+  direction: DirectionChoices;
   Arrow: React.ReactNode;
 }
 export interface sendMovePaddle {
-  direction: "up" | "down";
-  player: "player1" | "player2";
+  direction: DirectionChoices;
+  player: PlayerChoices;
   id: string;
 }
 const TouchPoint = ({ direction, Arrow }: Props) => {

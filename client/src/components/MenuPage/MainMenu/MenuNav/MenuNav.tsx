@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../redux";
+import { RootState } from "../../../../redux";
 import {
   createSession,
   joinSession,
-  MobileCodes,
-} from "../../../redux/features/menu-slice";
+} from "../../../../redux/features/menu-slice";
+import { PlayerOptions } from "../../../../util/types";
 
 import "./Menu.css";
 
-const Menu = () => {
+const MenuNav = () => {
   const dispatch = useDispatch();
 
   const { socket } = useSelector(({ socket: { socket } }: RootState) => ({
@@ -25,7 +25,7 @@ const Menu = () => {
       socket.emit(
         "JOIN_SESSION",
         joinVal,
-        (foundSession: boolean, mobileCodes: MobileCodes) => {
+        (foundSession: boolean, mobileCodes: PlayerOptions<string>) => {
           if (foundSession) {
             dispatch(joinSession({ sessionId: joinVal, mobileCodes }));
           } else {
@@ -44,7 +44,7 @@ const Menu = () => {
           onClick={() => {
             socket.emit(
               "CREATE_SESSION",
-              (id: string, mobileCodes: MobileCodes) => {
+              (id: string, mobileCodes: PlayerOptions<string>) => {
                 dispatch(createSession({ sessionId: id, mobileCodes }));
               }
             );
@@ -75,4 +75,4 @@ const Menu = () => {
     </>
   );
 };
-export default Menu;
+export default MenuNav;

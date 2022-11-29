@@ -5,6 +5,7 @@ import { RootState } from "../redux";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { leaveSession } from "../redux/features/menu-slice";
+import { deleteServer } from "../redux/features/serverList-slice";
 
 const useHostDC = () => {
   const dispatch = useDispatch();
@@ -23,9 +24,13 @@ const useHostDC = () => {
       console.log("host disconected");
       socket.emit("LEAVE_SESSION", sessionId);
       location.pathname !== "/" && navigate("/");
+      dispatch(deleteServer(sessionId));
       dispatch(leaveSession());
     });
-  }, [socket]);
+    return() => {
+      socket.removeListener('HOST_DISCONNECTED')
+    }
+  }, [sessionId]);
 };
 
 export default useHostDC;

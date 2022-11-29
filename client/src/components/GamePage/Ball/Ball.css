@@ -1,11 +1,13 @@
-.pong{
-    background: var(--piece-color);
- 
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
+.pong {
+  background: var(--piece-color);
+
+  position: absolute;
+  top: 0;
+  left: 27%;
+  
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
   border: none !important;
-    position: absolute;
-    left: 27%;
-    z-index: 5;
+  z-index: 5;
 }

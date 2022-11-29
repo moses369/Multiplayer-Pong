@@ -61,7 +61,8 @@ button{
 .neonButton:hover,
 .neonButton:focus {
   color: var(--primary-background);
-  text-shadow: 0;
+  text-shadow: none;
+  z-index: 1;
 }
 
 

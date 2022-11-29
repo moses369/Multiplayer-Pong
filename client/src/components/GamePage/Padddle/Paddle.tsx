@@ -2,11 +2,11 @@ import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useKeyControls from "../../../customHook/useKeyControls";
 import { RootState } from "../../../redux";
-
+import { DirectionChoices, PlayerChoices, players } from "../../../util/types";
 import "./Paddle.css";
 
 interface PaddleProps {
-  player: "player1" | "player2";
+  player: PlayerChoices;
   paddleRef: React.RefObject<HTMLDivElement>;
 }
 const Paddle = ({ player, paddleRef }: PaddleProps) => {
@@ -60,8 +60,8 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
     socket.on(
       "MOVING_PADDLE",
       (
-        direction: "up" | "down",
-        playerMoved: "player1" | "player2",
+        direction: DirectionChoices,
+        playerMoved: PlayerChoices,
         move: boolean
       ) => {
         if (playerMoved === player) {
@@ -70,12 +70,15 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
         }
       }
     );
-  }, [socket]);
+    return () => {
+      socket.removeListener("MOVING_PADDLE")
+    }
+  }, []);
 
   return (
     <div
       ref={paddleRef}
-      className={`paddle ${player === "player1" ? "left" : "right"} neonBorder`}
+      className={`paddle ${player === players.one ? "left" : "right"} neonBorder`}
     ></div>
   );
 };

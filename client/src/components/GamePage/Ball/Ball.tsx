@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux";
+import { incrementScore } from "../../../redux/features/game-slice";
+import { PlayerChoices, players } from "../../../util/types";
 import "./Ball.css";
 interface Props {
   paddle1Ref: React.RefObject<HTMLDivElement>;
@@ -8,9 +10,11 @@ interface Props {
   resetRound: any;
 }
 const Ball = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
+  const dispatch = useDispatch()
   const [playAnimation, setPlayAnimation] = useState<boolean>(true);
+  const [scored, setScored] = useState<PlayerChoices | ''>('');
   const pongRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef<{ x: number; y: number }>({ x: 10, y: 10 });
+  const offsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const reverseRef = useRef<{ x: boolean; y: boolean; paddle: boolean }>({
     x: false,
     y: false,
@@ -88,7 +92,8 @@ const Ball = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
       animateRef.current = requestAnimationFrame(animate);
       if (rects.pong.x < 0 || rects.pong.x > rects.border.right) {
         console.log("reset");
-
+        rects.pong.x < 0 && setScored(players.two)
+        rects.pong.x > rects.border.right && setScored(players.one)
         setPlayAnimation(false);
       }
     }
@@ -98,13 +103,18 @@ const Ball = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     setTimeout(() => {
       setPlayAnimation(true);
     }, 1000);
-    // });
-  }, [setPlayAnimation]);
+  }, []);
+  useEffect(() => {
+    scored && dispatch(incrementScore(scored))
+  },[scored])
   useEffect(() => {
     if (playAnimation) {
       animateRef.current = requestAnimationFrame(animate);
     } else {
+      
+
       resetRound();
+      
       cancelAnimationFrame(animateRef.current);
     }
   }, [playAnimation]);

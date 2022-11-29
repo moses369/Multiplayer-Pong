@@ -29,15 +29,13 @@ io.on("connection", (socket) => {
                     socket.to(id).emit("HOST_DISCONNECTED", () => {
                         console.log("notified clients");
                         io.socketsLeave(id);
+                        io.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 0 }, true, true);
                     });
                 console.log("\n");
                 delete sessions[id];
             }
         }
-    }, 5_000);
-    socket.on("disconnect", () => {
-        console.log("room dced from", socket, "\n");
-    });
+    }, 10_000);
     socket.on("CREATE_SESSION", (sendIdsBack) => {
         const generatedId = checkIdIsNotTaken();
         const player = () => ({
@@ -58,6 +56,7 @@ io.on("connection", (socket) => {
         };
         sendIdsBack(generatedId, mobileCode);
         socket.join(generatedId);
+        socket.broadcast.emit("UPDATE_SERVERLIST", { id: generatedId, connectedPlayers: 1 }, false);
         console.log(` created session ${generatedId}`, sessions[generatedId]);
         console.log(io.sockets.adapter.rooms.get(generatedId), "\n");
     });
@@ -65,7 +64,7 @@ io.on("connection", (socket) => {
         const sessionID = id.substring(0, 4);
         const session = sessions[sessionID];
         callback(!!session
-            ? !session.local || (session.local && id.length > 4)
+            ? !session?.local || (session?.local && id.length > 4)
                 ? true
                 : false
             : false, {
@@ -88,7 +87,10 @@ io.on("connection", (socket) => {
                     socket.to(sessions[sessionID].host).emit("READY_TO_START");
                 }
             };
-            id.length === 4 && (sessions[sessionID].guest = socket.id);
+            if (id.length === 4) {
+                sessions[sessionID].guest = socket.id;
+                socket.broadcast.emit("UPDATE_SERVERLIST", { id: sessionID, connectedPlayers: 2 }, true, false);
+            }
             checkForDeviceConnections("player1");
             checkForDeviceConnections("player2");
             joinMobile("player1");
@@ -103,10 +105,17 @@ io.on("connection", (socket) => {
         if (sessions[id]) {
             const noHost = socket.id === sessions[id].host;
             if (noHost) {
+                socket.broadcast.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 0 }, true, true);
                 socket.to(id).emit("HOST_DISCONNECTED", () => {
                     io.socketsLeave(id);
                     delete sessions[id];
                 });
+            }
+            else {
+                if (socket.id === sessions[id].guest) {
+                    sessions[id].guest = '';
+                }
+                socket.broadcast.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 1 }, true, false);
             }
             console.log(`${socket.id} left room ${id}`);
             console.log(`${noHost ? "deleted" : "left"} room ${id} \n`);
@@ -139,6 +148,14 @@ io.on("connection", (socket) => {
         console.log("MOVINIG", { player, id, direction, move });
         socket.to(id).emit("MOVING_PADDLE", direction, player, move);
         keys && socket.emit("MOVING_PADDLE", direction, player, move);
+    });
+    socket.on("GET_SERVERS", (returnServers) => {
+        const servers = [];
+        for (const [id, details] of Object.entries(sessions)) {
+            let connectedPlayers = details.guest ? 2 : 1;
+            servers.push({ id, connectedPlayers });
+        }
+        returnServers(servers);
     });
 });
 server.listen(PORT, () => {

@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../../redux";
-import {
-  MobileCodes,
-  updateSelectedDevice,
-} from "../../../redux/features/menu-slice";
+import { RootState } from "../../../../redux";
+import { updateSelectedDevice } from "../../../../redux/features/menu-slice";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
-
 import "./ChoosePlayer.css";
+import { players, devices } from "../../../../util/types";
+
 interface ChoosePlayerProps {
   playerNum: 1 | 2;
 }
-interface Devices {
-  mobile: "mobile";
-  keys: "keyboard";
-}
-const devices: Devices = { mobile: "mobile", keys: "keyboard" };
 
 const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
   const dispatch = useDispatch();
@@ -35,9 +28,9 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
     );
 
   const accessDeviceSelected = () => deviceSelected[`player${playerNum}`];
-
+  const isSamePlayer = () => playerNum === parseInt(player[6]);
   const connectKeys = () => {
-    if (playerNum === parseInt(player[6]) || local) {
+    if (isSamePlayer() || local) {
       !local && socket.emit("CONNECT_PLAYER", sessionId, player, devices.keys);
       dispatch(
         updateSelectedDevice({
@@ -47,9 +40,7 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
       );
     }
   };
-  useEffect(() => {
-    console.log(deviceSelected);
-  }, [deviceSelected]);
+
 
   useEffect(() => {
     socket.on("PLAYER_CONNECTED", (playerConnected, device) => {
@@ -60,29 +51,44 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
     socket.on("MOBILE_DISCONNECT", (player1Device, player2Device) => {
       if (deviceSelected.player1 !== player1Device) {
         dispatch(
-          updateSelectedDevice({ player: "player1", device: player1Device })
+          updateSelectedDevice({ player: players.one, device: player1Device })
         );
       }
       if (deviceSelected.player2 !== player2Device) {
         dispatch(
-          updateSelectedDevice({ player: "player2", device: player2Device })
+          updateSelectedDevice({ player: players.two, device: player2Device })
         );
       }
     });
+    return () => {
+      socket.removeListener("PLAYER_CONNECTED")
+      socket.removeListener("MOBILE_DISCONNECT")
+    }
   }, [socket]);
   const active = (device: string) =>
     accessDeviceSelected() === device && "active";
   return (
     <div className="choosePlayerContainer">
-      <h2 className="playerIndicator">{`Player ${playerNum}`}</h2>
-      <p>
-        {playerNum === 1 ? "Left" : "Right"} Paddle{" "}
-      </p>
+      <h2
+        className={`playerIndicator ${
+          !local && isSamePlayer() && "samePlayer"
+        }`}
+      >
+        {`Player ${playerNum}`}
+      </h2>
+      <p>{playerNum === 1 ? "Left" : "Right"} Paddle </p>
       <h3 className="controlTitle">Controls</h3>
       <div className="row controlContainer">
         <div>
           <h3 className="indicatorTitle">Keyboard</h3>
-          <button className="keyBtn" onClick={connectKeys}>
+          <button
+            className="keyBtn"
+            onClick={connectKeys}
+            style={{
+              pointerEvents:
+                (!local && isSamePlayer()) || local ? "auto" : "none",
+            }}
+          >
             <KeyBoardControl
               active={active}
               char={playerNum === 1 ? "W" : <AiOutlineArrowUp />}
@@ -113,7 +119,9 @@ interface KeyProps {
 }
 const KeyBoardControl = ({ char, active }: KeyProps) => {
   return (
-    <div className={`keyIndicator neonBorder ${active(devices.keys)}`}>
+    <div
+      className={`keyIndicator neonBorder ${active(devices.keys)}`}
+    >
       <p className="centerAbs keyBtnText">{char}</p>
     </div>
   );

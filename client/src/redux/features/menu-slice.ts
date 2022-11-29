@@ -1,21 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Socket } from "socket.io-client";
-import { stat } from "fs";
+import { PlayerOptions,PlayerChoices, players } from "../../util/types";
 
-export interface MobileCodes {
-  player1: string;
-  player2: string;
-}
+
 export interface MenuState {
   host: boolean;
   local: boolean;
   sessionId: string;
-  player: "player1" | "player2";
+  player: PlayerChoices;
   inSession: boolean;
-  mobileCode: MobileCodes;
+  mobileCode: PlayerOptions<string>;
   isMobile: boolean;
-  deviceSelected: MobileCodes;
+  deviceSelected: PlayerOptions<string>;
 }
 
 const initialState: MenuState = {
@@ -23,14 +19,14 @@ const initialState: MenuState = {
   local: false,
   isMobile: false,
   sessionId: "",
-  player: "player1",
+  player: players.one,
   inSession: false,
   mobileCode: { player1: "", player2: "" },
   deviceSelected: { player1: "", player2: "" },
 };
 interface SessionInfo {
   sessionId: string;
-  mobileCodes: MobileCodes;
+  mobileCodes: PlayerOptions<string>;
 }
 export const menuSlice = createSlice({
   name: "menu-slice",
@@ -50,31 +46,37 @@ export const menuSlice = createSlice({
       state,
       { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>
     ) {
-      state.player = "player2";
+      state.player = players.two;
       state.sessionId = sessionId.substring(0, 4);
       state.inSession = true;
       state.mobileCode = mobileCodes;
     },
     leaveSession(state) {
-      state.sessionId = "";
-      state.inSession = false;
       state.host = false;
-      state.player = "player1";
+      state.local = false;
+      state.isMobile = false;
+      state.sessionId = "";
+      state.player = players.one;
+      state.inSession = false;
+      state.mobileCode = { player1: "", player2: "" };
+      state.deviceSelected = { player1: "", player2: "" };
     },
 
     setLocal(state) {
       state.local = !state.local;
     },
-    isController(state, action: PayloadAction<"player1" | "player2">) {
+    isController(state, action: PayloadAction<PlayerChoices>) {
       state.isMobile = true;
       state.player = action.payload;
     },
     updateSelectedDevice(
       state,
-      action: PayloadAction<{ player: "player1" | "player2"; device: "keyboard" | "mobile" }>
+      action: PayloadAction<{
+        player: PlayerChoices;
+        device: "keyboard" | "mobile";
+      }>
     ) {
-      state.deviceSelected[`${action.payload.player}`] =
-        action.payload.device;
+      state.deviceSelected[`${action.payload.player}`] = action.payload.device;
     },
   },
 });

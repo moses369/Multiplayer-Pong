@@ -12,6 +12,7 @@
   color: #78cce2;
   display: flex;
   flex-direction: column;
+  /* justify-content: space-around; */
   align-items: center;
   padding: 1rem;
 }

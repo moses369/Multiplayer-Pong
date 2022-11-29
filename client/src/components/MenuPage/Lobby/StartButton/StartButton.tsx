@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { RootState } from "../../../redux";
+import { RootState } from "../../../../redux";
 
-import './StartButton.css'
+import "./StartButton.css";
 const StartButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,21 +31,22 @@ const StartButton = () => {
     socket.on("MOBILE_DISCONNECT", () => {
       setAllReady(false);
     });
-    console.log(!host && !isMobile);
-    
+
+
     if (!host && !isMobile) {
       socket.on("START_GAME", () => {
         console.log("host started game");
 
         navigate("/game");
       });
-    } else {
+    } 
+    return () =>  {
       socket.removeListener("START_GAME");
+      socket.removeListener("READY_TO_START");
+      socket.removeListener("MOBILE_DISCONNECT");
     }
   }, [socket, setAllReady, host, isMobile]);
-  useEffect(() => {
-    if (host) console.log(allReady);
-  }, [allReady, host]);
+
 
   const start = () => {
     console.log(host && allReady);
@@ -55,7 +56,15 @@ const StartButton = () => {
       socket.emit("STARTING_GAME", sessionId);
     }
   };
-  return <button id="start" className=" neonButton neonText neonBorder" onClick={start}>Start</button>;
+  return (
+    <button
+      id="start"
+      className=" neonButton neonText neonBorder"
+      onClick={start}
+    >
+      Start
+    </button>
+  );
 };
 
 export default StartButton;

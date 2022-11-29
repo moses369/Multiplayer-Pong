@@ -2,8 +2,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
 import { setLocal } from "../../../redux/features/menu-slice";
 
-import ChoosePlayer from "../ChoosePlayer/ChoosePlayer";
-import StartButton from "../StartButton/StartButton";
+import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
+import StartButton from "./StartButton/StartButton";
 
 import "./Lobby.css";
 

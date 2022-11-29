@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
+import { PlayerChoices, players } from "../../../util/types";
 
 import Ball from "../Ball/Ball";
 import Paddle from "../Padddle/Paddle";
@@ -19,7 +20,6 @@ const GameDisplay = () => {
   const paddle1Ref = useRef<HTMLDivElement>(null);
   const paddle2Ref = useRef<HTMLDivElement>(null);
 
-
   const resetRound = () => {
     setStart(() => {
       return false;
@@ -34,8 +34,12 @@ const GameDisplay = () => {
   return (
     <>
       {
-        <div className="game_container">
-          <Paddle player={"player1"} paddleRef={paddle1Ref} />
+        <div className="gameContainer">
+          <div className="scoreContainer">
+            <ScoreIndicator player={players.one} />
+            <ScoreIndicator player={players.two} />
+          </div>
+          <Paddle player={players.one} paddleRef={paddle1Ref} />
           {start && (
             <Ball
               paddle1Ref={paddle1Ref}
@@ -43,7 +47,7 @@ const GameDisplay = () => {
               resetRound={resetRound}
             />
           )}
-          <Paddle player={"player2"} paddleRef={paddle2Ref} />
+          <Paddle player={players.two} paddleRef={paddle2Ref} />
         </div>
       }
     </>
@@ -51,3 +55,10 @@ const GameDisplay = () => {
 };
 
 export default GameDisplay;
+interface ScoreIndicatorProps {
+  player: PlayerChoices;
+}
+const ScoreIndicator = ({ player }: ScoreIndicatorProps) => {
+  const score = useSelector((state: RootState) => state.game.score);
+  return <h1 className="neonText score">{score[player]}</h1>;
+};
