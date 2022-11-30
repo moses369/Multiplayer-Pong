@@ -22,11 +22,12 @@ const TouchPoint = ({ direction, Arrow }: Props) => {
     <button
     className="neonButton neonBorder neonText touchPoint"
       onTouchStart={(e) => {
-       
-        socket.emit("MOVE_PADDLE", sessionId, direction, player,true);
+       //Tells the connected paddle to start moving in the given direction
+        socket.emit("MOVE_PADDLE", sessionId, direction, player,true); 
       }}
       onTouchEnd={(e) => {
       
+       //Tells the connected paddle to stop moving
         socket.emit("MOVE_PADDLE", sessionId, direction, player,false);
       }}
     >
