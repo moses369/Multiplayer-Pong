@@ -24,7 +24,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
    * Logic for the animation for the paddle
    */
   const animate = () => {
-    const delta = 1.5; // the speed of the paddle move in vh units
+    const delta = .9; // the speed of the paddle move in vh units
     if (paddle && document) {
       /**
        * Dimensions of the paddle

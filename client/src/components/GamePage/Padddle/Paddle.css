@@ -2,7 +2,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    min-height: 7vh;
+    min-height: 6vh;
    
     width: .1vw;
     background-color: var(--piece-color);

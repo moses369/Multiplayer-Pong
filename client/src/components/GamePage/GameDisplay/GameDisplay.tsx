@@ -3,20 +3,20 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
 import { PlayerChoices, players } from "../../../util/types";
 
-import Ball from "../Ball/Ball";
+import Pong from "../Pong/Pong";
 import Paddle from "../Padddle/Paddle";
 
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
 
-  const [start, setStart] = useState<boolean>(true); // determines if we start, our ball animation, used to reset the ball position as well
+  const [start, setStart] = useState<boolean>(true); // determines if we start, our Pong animation, used to reset the Pong position as well
 
   const paddle1Ref = useRef<HTMLDivElement>(null);
   const paddle2Ref = useRef<HTMLDivElement>(null);
 
   /**
-   * Resets the round by unrendering the ball/pong 
+   * Resets the round by unrendering the Pong/pong 
    *  @param time determines how long to wait before starting the next round defaults to 1000ms
    */
   const resetRound = (time:number = 1000) => {
@@ -40,7 +40,7 @@ const GameDisplay = () => {
           </div>
           <Paddle player={players.one} paddleRef={paddle1Ref} />
           {start && (
-            <Ball
+            <Pong
               paddle1Ref={paddle1Ref}
               paddle2Ref={paddle2Ref}
               resetRound={resetRound}

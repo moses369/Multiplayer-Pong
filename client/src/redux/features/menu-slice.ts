@@ -16,7 +16,7 @@ export interface MenuState {
 
 const initialState: MenuState = {
   host: false,
-  local: false,
+  local: true,
   isMobile: false,
   sessionId: "",
   player: players.one,

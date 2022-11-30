@@ -60,7 +60,6 @@ const StartButton = () => {
    * On click of start button, only the host and if everuone is ready it will start the game
    */
   const start = () => {
-    console.log(host && allReady);
 
     if (host && allReady) {
       navigate("/game");
