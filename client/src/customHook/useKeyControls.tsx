@@ -9,7 +9,13 @@ interface KeyControlProp {
     setPlayAnimation: React.Dispatch<React.SetStateAction<boolean>>
   ): void;
 }
-
+/**
+ * Creates the keyboard controls for player on, and two
+ * @param player The player the controls are for
+ * @param directionRef The direction the paddle will move
+ * @param setPlayAnimation Used to toggle the animation for paddles
+ * @returns 
+ */
 const useKeyControls: KeyControlProp = (
   player,
   directionRef,
@@ -22,15 +28,22 @@ const useKeyControls: KeyControlProp = (
       sessionId,
     })
   );
+  /**
+   * used to determine to direction, and if the paddle should move, or not
+   */
   const moveLogic = (direction: "up" | "down", move: boolean) => {
     if (local) {
       directionRef.current = direction;
       setPlayAnimation(move);
     } else {
+      // if not local only move through socket events to help normlaize the response in the sending and opposite player 
       socket.emit("MOVE_PADDLE", sessionId, direction, player, move,true);
     }
   };
-
+/**
+ * Determines what key will move which player and if it should stop, or move
+ * @param move if the paddle should move or not
+ */
   const playerMove = (move: boolean, e: KeyboardEvent) => {
     if (
       player === "player1"
@@ -52,7 +65,9 @@ const useKeyControls: KeyControlProp = (
   const stopPaddle = (e: KeyboardEvent) => {
     playerMove(false, e);
   };
-
+/**
+ * Sets event listeners on the document to handle the paddle movements
+ */
   useEffect(() => {
     document.addEventListener("keydown", movePaddle);
     document.addEventListener("keyup", stopPaddle);

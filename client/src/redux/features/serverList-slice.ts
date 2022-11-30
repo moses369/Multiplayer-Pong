@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-
 export interface Server {
   id: string;
   connectedPlayers: number;
@@ -28,9 +27,16 @@ export const serverListSlice = createSlice({
     },
     updateServer(state, action: PayloadAction<Server>) {
       const newServer = action.payload;
-      for (let i = 0; i < state.servers.length; i++) {
-        const server = state.servers[i];
-        server.id === newServer.id && (state.servers[i] = newServer);
+      if (state.servers[state.servers.length - 1].id === newServer.id) {
+        state.servers[state.servers.length - 1] = newServer;
+      } else {
+        for (let i = 0; i < state.servers.length; i++) {
+          const server = state.servers[i];
+          if (server.id === newServer.id) {
+            state.servers[i] = newServer;
+            break;
+          }
+        }
       }
     },
     deleteServer(state, action: PayloadAction<string>) {

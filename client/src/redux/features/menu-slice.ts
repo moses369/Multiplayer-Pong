@@ -32,6 +32,7 @@ export const menuSlice = createSlice({
   name: "menu-slice",
   initialState,
   reducers: {
+
     createSession(
       state,
       { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>

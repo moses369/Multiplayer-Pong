@@ -26,6 +26,9 @@ const MenuPage = () => {
       local,
     })
   );
+  /**
+   * Used to leave the session
+   */
   const leave = useCallback(() => {
     if (sessionId) {
       console.log("left");
@@ -34,11 +37,15 @@ const MenuPage = () => {
       dispatch(leaveSession());
     }
   }, [sessionId]);
-
+  /**
+   * If the player is not in a session leave the lobby and reset the session info
+   */
   useEffect(() => {
     !inSession && leave();
   }, [inSession]);
-
+  /**
+   * If a controller connected send them to the controller page
+   */
   useEffect(() => {
     socket.on("CONNECT_MOBILE", (player: PlayerChoices) => {
       dispatch(isController(player));

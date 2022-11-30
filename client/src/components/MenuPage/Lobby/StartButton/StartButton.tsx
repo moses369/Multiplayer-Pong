@@ -19,35 +19,46 @@ const StartButton = () => {
       isMobile,
     })
   );
-  const [allReady, setAllReady] = useState<boolean>(false);
+  const [allReady, setAllReady] = useState<boolean>(false); //Determines if everyone readyed up
+  /**
+   * If local allow the player to start whenever
+   */
   useEffect(() => {
     setAllReady(local);
   }, [local]);
+
+  /**
+   * Listens for socket events
+   */
   useEffect(() => {
+    // If all players connected set ready to start to true
     socket.on("READY_TO_START", () => {
       setAllReady(true);
       console.log("Ready");
     });
+    // If a mobile phone controller disconnected set it to false
     socket.on("MOBILE_DISCONNECT", () => {
       setAllReady(false);
     });
 
-
+    // If not the host and not a controller navigate to the game board
     if (!host && !isMobile) {
       socket.on("START_GAME", () => {
         console.log("host started game");
 
         navigate("/game");
       });
-    } 
-    return () =>  {
+    }
+    return () => {
       socket.removeListener("START_GAME");
       socket.removeListener("READY_TO_START");
       socket.removeListener("MOBILE_DISCONNECT");
-    }
+    };
   }, [socket, setAllReady, host, isMobile]);
 
-
+  /**
+   * On click of start button, only the host and if everuone is ready it will start the game
+   */
   const start = () => {
     console.log(host && allReady);
 

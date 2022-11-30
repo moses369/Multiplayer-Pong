@@ -20,6 +20,10 @@ const MenuNav = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setJoinVal(e.target.value.toUpperCase());
+
+    /**
+     * If the session is real join it, otherwise display an error
+     */
   const submitSessionID = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       socket.emit(
@@ -42,9 +46,11 @@ const MenuNav = () => {
         <button
           className="neonButton neonText neonBorder"
           onClick={() => {
+            //Creates a new session
             socket.emit(
               "CREATE_SESSION",
               (id: string, mobileCodes: PlayerOptions<string>) => {
+                //uses the session id and mobile codes returned from the server
                 dispatch(createSession({ sessionId: id, mobileCodes }));
               }
             );

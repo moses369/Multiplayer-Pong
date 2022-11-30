@@ -9,18 +9,17 @@ import Paddle from "../Padddle/Paddle";
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
-  const { socket, sessionId } = useSelector(
-    ({ socket: { socket }, menu: { sessionId } }: RootState) => ({
-      socket,
-      sessionId,
-    })
-  );
-  const [start, setStart] = useState<boolean>(true);
+
+  const [start, setStart] = useState<boolean>(true); // determines if we start, our ball animation, used to reset the ball position as well
 
   const paddle1Ref = useRef<HTMLDivElement>(null);
   const paddle2Ref = useRef<HTMLDivElement>(null);
 
-  const resetRound = () => {
+  /**
+   * Resets the round by unrendering the ball/pong 
+   *  @param time determines how long to wait before starting the next round defaults to 1000ms
+   */
+  const resetRound = (time:number = 1000) => {
     setStart(() => {
       return false;
     });
@@ -28,7 +27,7 @@ const GameDisplay = () => {
       setStart(() => {
         return true;
       });
-    }, 1000);
+    }, time);
   };
 
   return (
@@ -55,9 +54,14 @@ const GameDisplay = () => {
 };
 
 export default GameDisplay;
+
 interface ScoreIndicatorProps {
   player: PlayerChoices;
 }
+/** 
+ * Used to render the score for each player
+ * @param player the player to render the score for 
+*/
 const ScoreIndicator = ({ player }: ScoreIndicatorProps) => {
   const score = useSelector((state: RootState) => state.game.score);
   return <h1 className="neonText score">{score[player]}</h1>;

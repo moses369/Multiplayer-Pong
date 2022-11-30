@@ -19,6 +19,9 @@ const ServerSelect = () => {
     servers: state.serverList.servers,
   }));
 
+  /**
+   * Listens for session updates
+   */
   useEffect(() => {
     if (servers.length === 0) {
       socket.emit("GET_SERVERS", (newServers: Server[]) => {
@@ -33,15 +36,12 @@ const ServerSelect = () => {
       (server: Server, alreadySent: boolean, deleted: boolean) => {
         if (!alreadySent) {
           console.log("add server");
-
           dispatch(addServer(server));
         } else if (!deleted) {
           console.log('update server');
-          
           dispatch(updateServer(server));
         } else if (deleted) {
           console.log('delete server');
-          
           dispatch(deleteServer(server.id));
         }
       }

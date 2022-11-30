@@ -36,8 +36,10 @@ const Lobby = ({ leave }: Lobby) => {
             <button
               className="neonButton neonText neonBorder changeSatusBtn"
               onClick={() => {
+                //Updates wether the session is local or online
                 socket.emit("UPDATE_LOCAL", sessionId);
                 dispatch(setLocal());
+                
               }}
             >
               {local ? "Local" : "Online"}

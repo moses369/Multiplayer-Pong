@@ -29,6 +29,9 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
 
   const accessDeviceSelected = () => deviceSelected[`player${playerNum}`];
   const isSamePlayer = () => playerNum === parseInt(player[6]);
+  /**
+   * Indicates that keys are being used as the primary control
+   */
   const connectKeys = () => {
     if (isSamePlayer() || local) {
       !local && socket.emit("CONNECT_PLAYER", sessionId, player, devices.keys);
@@ -41,13 +44,13 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
     }
   };
 
-
   useEffect(() => {
+    // Updates the selected devices whenever a player connects 
     socket.on("PLAYER_CONNECTED", (playerConnected, device) => {
       console.log(playerConnected, "connected", device);
-
       dispatch(updateSelectedDevice({ player: playerConnected, device }));
     });
+    // When a mobile phone disconnects update the devices selected
     socket.on("MOBILE_DISCONNECT", (player1Device, player2Device) => {
       if (deviceSelected.player1 !== player1Device) {
         dispatch(
@@ -61,17 +64,18 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
       }
     });
     return () => {
-      socket.removeListener("PLAYER_CONNECTED")
-      socket.removeListener("MOBILE_DISCONNECT")
-    }
+      socket.removeListener("PLAYER_CONNECTED");
+      socket.removeListener("MOBILE_DISCONNECT");
+    };
   }, [socket]);
+  // Determines if the device slected matches the connected device
   const active = (device: string) =>
     accessDeviceSelected() === device && "active";
   return (
     <div className="choosePlayerContainer">
       <h2
         className={`playerIndicator ${
-          !local && isSamePlayer() && "samePlayer"
+          !local && isSamePlayer() && "samePlayer" //Adds an indicator to show which player the player connected is
         }`}
       >
         {`Player ${playerNum}`}
@@ -86,9 +90,10 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
             onClick={connectKeys}
             style={{
               pointerEvents:
-                (!local && isSamePlayer()) || local ? "auto" : "none",
+                (!local && isSamePlayer()) || local ? "auto" : "none", // If online dont allow the player to click the others controls
             }}
           >
+            
             <KeyBoardControl
               active={active}
               char={playerNum === 1 ? "W" : <AiOutlineArrowUp />}
@@ -117,11 +122,11 @@ interface KeyProps {
   active: (device: string) => string | false;
   char: string | React.ReactNode;
 }
+
+// Displayes the keyboard controls for each player
 const KeyBoardControl = ({ char, active }: KeyProps) => {
   return (
-    <div
-      className={`keyIndicator neonBorder ${active(devices.keys)}`}
-    >
+    <div className={`keyIndicator neonBorder ${active(devices.keys)}`}>
       <p className="centerAbs keyBtnText">{char}</p>
     </div>
   );

@@ -16,9 +16,15 @@ const useHostDC = () => {
     sessionId: state.menu.sessionId,
     inSession: state.menu.inSession,
   }));
+  /**
+   * If player is not in a session and not already in the menu, move them to the menu
+   */
   useEffect(() => {
     location.pathname !== "/" && !inSession && navigate("/");
   }, [inSession]);
+  /**
+   * If the host discontted reset the session info and delete it from the users server list
+   */
   useEffect(() => {
     socket.on("HOST_DISCONNECTED", () => {
       console.log("host disconected");
