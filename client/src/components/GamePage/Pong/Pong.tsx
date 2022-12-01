@@ -17,7 +17,7 @@ interface OffSet {
   horizontal: boolean;
 }
 const delta = {
-  max: 2.5,
+  max: 1.75,
   min: 0.3,
 };
 const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
@@ -29,7 +29,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const offsetRef = useRef<OffSet>({
     x: 0,
     y: 0,
-    delta: 0.3, // max 2.5 min .3
+    delta: 0.3, // max 1.75 min .3
     horizontal: false,
   }); // The distance to move the Pong on its x and y axis, and speed to do so
   const directionRef = useRef<{
@@ -71,13 +71,13 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
       /**
        * Determines if the pong sides are in between the paddles sides
        * @param paddleRect the paddle to determine if the Pong collided with it
-       * @param buffer the spacing for error on a ball bounce
        * @returns a boolean indicating the pong is in between the paddle vertically
        */
-      const sideBetweenPaddle = (
-        paddleRect: DOMRect,
-        buffer: number = 0
-      ): boolean => {
+      const sideBetweenPaddle = (paddleRect: DOMRect): boolean => {
+        /**
+         *  add to horizontal sides for speed indescrepencies
+         * */
+        const buffer = offsetRef.current.delta < 1.7 ? 7 : 9;
         const buffedPaddle = {
           left: directionRef.current.left
             ? paddleRect.left - buffer / 2
@@ -144,7 +144,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
           half: paddleRect.height / 2,
         };
 
-        const sideBounce = sideBetweenPaddle(paddleRect, 4);
+        const sideBounce = sideBetweenPaddle(paddleRect);
 
         const paddleSection = {
           topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
@@ -169,9 +169,6 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
             pongRect.top >= paddleSection.bottomCorner &&
             sideBounce,
         };
-
-        //  console.log((pongRect.top >= paddleSection.topMid &&
-        //   pongRect.top <= paddleSection.bottomMid));
 
         if (
           (!directionRef.current.paddleBounced && paddleBounced.topCorner) ||
@@ -204,7 +201,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleRect =
           rects.paddles[directionRef.current.left ? "left" : "right"];
 
-        const sideBounce = sideBetweenPaddle(paddleRect, 7);
+        const sideBounce = sideBetweenPaddle(paddleRect);
         const inBetween = inBetweenPaddles(paddleRect);
         if (!directionRef.current.paddleBounced && sideBounce && inBetween) {
           offsetRef.current.horizontal = false;
