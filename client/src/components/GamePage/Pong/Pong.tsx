@@ -16,7 +16,10 @@ interface OffSet {
   delta: number;
   horizontal: boolean;
 }
-
+const delta = {
+  max: 2.5,
+  min: 0.3,
+};
 const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const dispatch = useDispatch();
   const [playAnimation, setPlayAnimation] = useState<boolean>(true); //Determines to play the animation or not
@@ -174,7 +177,8 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
           (!directionRef.current.paddleBounced && paddleBounced.topCorner) ||
           paddleBounced.bottomCorner
         ) {
-          offsetRef.current.delta < 2.5 && (offsetRef.current.delta += 0.15);
+          offsetRef.current.delta < delta.max &&
+            (offsetRef.current.delta += 0.15);
           console.log(
             "topcorner",
             paddleBounced.topCorner,
@@ -186,7 +190,8 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         }
         if (!directionRef.current.paddleBounced && paddleBounced.mid) {
           console.log("mid");
-          offsetRef.current.delta > 0.7 && (offsetRef.current.delta -= 0.1);
+          offsetRef.current.delta > delta.min + 0.4 &&
+            (offsetRef.current.delta -= 0.1);
           offsetRef.current.horizontal = true;
         }
       };
@@ -244,7 +249,6 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
 
       pong.style.transform = `translate(${move.x}vw,${move.y}vh)`;
 
-      // if(move.horizontal) debugger
       animateRef.current = requestAnimationFrame(animate);
       // If the Pong passes the left or right border update the score and reset the round
       if (rects.pong.x < 0 || rects.pong.x > rects.border.right) {
@@ -255,6 +259,23 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     }
   };
 
+  /**
+   * Increases the speed as the round progresses
+   */
+  const incrSpeed = useCallback(() => {
+    return setInterval(() => {
+      offsetRef.current.delta < delta.max && (offsetRef.current.delta += 0.1);
+    }, 7000);
+  }, []);
+  const intervalID = useRef<NodeJS.Timer>();
+
+  useEffect(() => {
+    intervalID.current = incrSpeed();
+    offsetRef.current.delta >= delta.max && clearInterval(intervalID.current);
+    return () => {
+      clearInterval(intervalID.current);
+    };
+  }, []);
   /**
    * On whenever the a player scores update their score
    */
