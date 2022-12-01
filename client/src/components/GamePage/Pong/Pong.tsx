@@ -17,7 +17,7 @@ interface OffSet {
   horizontal: boolean;
 }
 const delta = {
-  max: 1.75,
+  max: 2.5,
   min: 0.3,
 };
 const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
@@ -29,7 +29,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const offsetRef = useRef<OffSet>({
     x: 0,
     y: 0,
-    delta: 0.3, // max 1.75 min .3
+    delta: delta.min, // max 1.75 min .3
     horizontal: false,
   }); // The distance to move the Pong on its x and y axis, and speed to do so
   const directionRef = useRef<{
@@ -89,27 +89,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const centerPong = rects.pong.left + rects.pong.width / 2;
         const pongCenterInBetween =
           centerPong <= buffedPaddle.right && centerPong >= buffedPaddle.left;
-        // X axis of pong is in between the paddles if paddle is one determine if the left side bounced, otherwise check right side
-        // if (
-        //   (directionRef.current.left &&
-        //     rects.pong.left <= buffedPaddle.right) ||
-        //   pongCenterInBetween
-        // ) {
-        //   console.log(rects.pong.left >= buffedPaddle.left);
 
-        //   console.log(buffedPaddle.left, centerPong, buffedPaddle.right);
-        //   // debugger;
-        // }
-        // if (
-        //   (!directionRef.current.left &&
-        //     rects.pong.right >= buffedPaddle.left) ||
-        //   pongCenterInBetween
-        // ) {
-        //   console.log(rects.pong.right <= buffedPaddle.right);
-
-        //   console.log(buffedPaddle.right, rects.pong.left, buffedPaddle.left);
-        //   // debugger
-        // }
         return directionRef.current.left
           ? (rects.pong.left <= buffedPaddle.right &&
               rects.pong.left >= buffedPaddle.left) ||
@@ -138,7 +118,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleRect =
           rects.paddles[directionRef.current.left ? "left" : "right"];
         const pongRect = rects.pong;
-        const pongHalfHeightBuffed = pongRect.height / 2 - 5;
+        const pongHalfHeightBuffed = pongRect.height / 2 - 2 ;
         const paddleHeight = {
           eigth: paddleRect.height / 8,
           half: paddleRect.height / 2,
@@ -190,6 +170,9 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
           offsetRef.current.delta > delta.min + 0.4 &&
             (offsetRef.current.delta -= 0.1);
           offsetRef.current.horizontal = true;
+          setTimeout(() => {
+            directionRef.current.paddleBounced = false;
+          }, 200);
         }
       };
 
@@ -229,6 +212,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         // Resets the paddle reverse ref and reverses y direction when colliding with the top/bottom border
         if (rects.pong.bottom >= rects.border.bottom) {
           directionRef.current.up = true;
+          directionRef.current.paddleBounced = false;
         }
         // Reverses Direction of Pong movement on the x axis
         !move.horizontal && updateMove("y", move.delta);
@@ -236,13 +220,10 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         // Resets the paddle reverse ref and reverses y direction when colliding with the top/bottom border
         if (rects.pong.top <= 0) {
           directionRef.current.up = false;
+          directionRef.current.paddleBounced = false;
         }
         !move.horizontal && updateMove("y", -move.delta);
       }
-      directionRef.current.paddleBounced &&
-        setTimeout(() => {
-          directionRef.current.paddleBounced = false;
-        }, 500);
 
       pong.style.transform = `translate(${move.x}vw,${move.y}vh)`;
 
