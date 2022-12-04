@@ -4,12 +4,13 @@ import { Socket, io } from "socket.io-client";
 
 export interface SocketState {
   socket: Socket;
-
 }
 
+const socketServer = import.meta.env.DEV
+  ? "http://localhost:8000/"
+  : "https://synth-pong-socket.onrender.com/";
 const initialState: SocketState = {
-  socket: io("http://localhost:8000/"),
-
+  socket: io(socketServer),
 };
 
 export const socketSlice = createSlice({
