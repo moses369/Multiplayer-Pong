@@ -4,6 +4,7 @@ import useMouseControls from "../../customHook/useMouseControls";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux";
 
+import './GamePage.css'
 const GamePage = () => {
   const { player, local } = useSelector((state: RootState) => ({
     player: state.menu.player,
