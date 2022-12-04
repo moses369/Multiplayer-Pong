@@ -125,7 +125,7 @@ font-size: var(--sm-font);
   margin-top: .75em;
 }
 
-@media  (max-width:600px) {
+@media  (max-width:1000px) {
   .keyContainer,
   .mobileContainer {
 display: none;
