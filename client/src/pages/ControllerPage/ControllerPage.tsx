@@ -12,12 +12,12 @@ import useScreenSize from "../../customHook/useScreenSize";
 const ControllerPage = () => {
   const emitMove = useEmitPaddleMove();
   const ylocation = useRef<number>(0)
-const screenSize = useScreenSize()
+const {viewportHeight} = useScreenSize()
   
   const handleMovement = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.targetTouches.item(0);
     // Normalize the diplacement based off the center of the viewport
-    const touchY = touch.clientY / screenSize.current - 0.5;
+    const touchY = touch.clientY / viewportHeight.current - 0.5;
     if (touchY > -0.47 && touchY < 0.47) {
       touchY !== ylocation.current && emitMove(touchY, true, false);
       ylocation.current = touchY

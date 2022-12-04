@@ -7,7 +7,7 @@ import useScreenSize from "./useScreenSize";
 const useMouseControls = () => {
   const local = useSelector((state:RootState) => state.menu.local)
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useScreenSize()
+  const {viewportHeight} = useScreenSize()
   const ylocation = useRef<number>(0);
 
   const mouseControls = (e: React.MouseEvent<HTMLDivElement>) => {
