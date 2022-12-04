@@ -65,10 +65,12 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
         ? moveDistance.current
         : slideDelta.current * 100;
       // Actually translating the paddles
-      paddle.style.transform = `translateY(${yOffset}vh)`;
+      (paddle.style.transform = `translateY(${yOffset}vh)`);
 
       // Have our function called again on every AnimationFrame
       animateID.current = requestAnimationFrame(animate);
+
+      
     }
   };
 

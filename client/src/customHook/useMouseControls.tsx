@@ -1,8 +1,11 @@
 import React, { useRef } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux";
 import useEmitPaddleMove from "./useEmitPaddleMove";
 import useScreenSize from "./useScreenSize";
 
 const useMouseControls = () => {
+  const local = useSelector((state:RootState) => state.menu.local)
   const emitMove = useEmitPaddleMove();
   const viewportHeight = useScreenSize()
   const ylocation = useRef<number>(0);
@@ -13,7 +16,7 @@ const useMouseControls = () => {
     console.log(clientY);
     
     if (clientY > -0.47 && clientY < 0.47) {
-      clientY !== ylocation.current && emitMove(clientY, true, false);
+     !local && clientY !== ylocation.current && emitMove(clientY, true, false);
       ylocation.current = clientY;
       console.log(clientY);
     } else {

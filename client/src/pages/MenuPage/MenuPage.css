@@ -24,8 +24,8 @@
   color: var(--primary-background);
   letter-spacing: 0.125em;
   -webkit-text-stroke: .0125em var(--primary-text);
-  text-shadow: 0 0 0.125em var(--white-glow), 0 0 0.22em var(--primary-text),
-  0 0 0.5em var(--primary-text), 0 0 .7em var(--primary-text);
+  text-shadow: 0 0 0.1em var(--white-glow), 0 0 0.15em var(--primary-text),
+  0 0 0.2em var(--primary-text);
 }
 
 

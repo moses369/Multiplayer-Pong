@@ -69,8 +69,12 @@ const StartButton = () => {
   return (
     <button
       id="start"
-      className=" neonButton neonText neonBorder"
+      className={`${allReady ? 'ready':''} neonButton neonText neonBorder`}
       onClick={start}
+      style={{
+        pointerEvents:
+          (allReady ? "auto" : "none")
+      }}
     >
       Start
     </button>

@@ -62,6 +62,7 @@ button {
   transition: opacity 100ms linear;
 }
 .neonButton:hover::after,
+.ready.neonButton::after,
 .neonButton:focus::after,
 .neonButton:hover::before,
 .neonButton:focus::before {
@@ -69,6 +70,7 @@ button {
 }
 
 .neonButton:hover,
+.ready.neonButton,
 .neonButton:focus {
   color: var(--primary-background);
   text-shadow: none;
