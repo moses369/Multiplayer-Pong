@@ -3,7 +3,7 @@ import useEmitPaddleMove from "./useEmitPaddleMove";
 
 const useMouseControls = () => {
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useRef<number>(document?.body.clientHeight);
+  const viewportHeight = useRef<number>(window?.innerHeight);
   const ylocation = useRef<number>(0);
 
   const mouseControls = (e: React.MouseEvent<HTMLDivElement>) => {

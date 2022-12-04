@@ -4,10 +4,10 @@
   --primary-background: #002439;
   --primary-text: #579fb4;
   --white-glow: hsl(0 0% 100% / 0.3);
-  --sm-font: min(2vw + .2rem,1rem);
-  --md-font:min(2.5vw + .2rem,1.25rem);
-  --lg-font:min(3vw + .2rem,1.5rem);
-  --lg2-font:min(3.5 + .2rem,1.75rem)
+  --sm-font: min(2vw + 0.2rem, 1rem);
+  --md-font: min(2.5vw + 0.2rem, 1.25rem);
+  --lg-font: min(3vw + 0.2rem, 1.5rem);
+  --lg2-font: min(3.5 + 0.2rem, 1.75rem);
 }
 
 * {
@@ -15,12 +15,12 @@
   outline: none;
   margin: 0;
 }
-.playSurface{
-  min-height:calc(100vh - env(safe-area-inset-bottom));
+.playSurface {
+  min-height: calc(100vh - (env(safe-area-inset-bottom)));
   touch-action: none;
   overflow: hidden;
 }
-button{
+button {
   cursor: pointer;
 }
 .row {
@@ -29,7 +29,7 @@ button{
   justify-content: space-between;
   align-items: center;
 }
-.noEvents{
+.noEvents {
   pointer-events: none;
 }
 .neonButton {
@@ -38,14 +38,13 @@ button{
   display: inline-block;
   cursor: pointer;
   background: transparent;
-  
+
   height: fit-content;
   padding: 0.5em 1em;
 
   border-radius: 0.25em;
   position: relative;
 }
-
 
 .neonButton::after {
   content: "";
@@ -75,7 +74,6 @@ button{
   z-index: 1;
 }
 
-
 .neonText {
   color: var(--primary-text);
   text-shadow: 0 0 0.12em var(--white-glow), 0 0 0.4em currentColor;
@@ -87,10 +85,9 @@ button{
     0 0 0.5em 0 var(--primary-text);
 }
 
-.centerAbs{
+.centerAbs {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
 }
-

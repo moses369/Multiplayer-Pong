@@ -52,8 +52,8 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
       const rects = {
         pong: pong.getBoundingClientRect(),
         border: {
-          right: document?.body.clientWidth,
-          bottom: document?.body.clientHeight,
+          right: window?.innerWidth,
+          bottom: window?.innerHeight,
         },
         paddles: {
           left: paddle1.getBoundingClientRect(),

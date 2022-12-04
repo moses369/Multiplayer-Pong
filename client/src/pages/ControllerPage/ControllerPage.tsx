@@ -9,7 +9,7 @@ import "./ControllerPage.css";
 import useEmitPaddleMove from "../../customHook/useEmitPaddleMove";
 const ControllerPage = () => {
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useRef<number>(document?.body.clientHeight);
+  const viewportHeight = useRef<number>(window?.innerHeight);
   const ylocation = useRef<number>(0)
 
   
