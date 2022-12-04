@@ -14,7 +14,9 @@ function App() {
   useHostDC();
 
   return (
-    <div className="App">
+    <div className="App" 
+      
+    >
       <Routes>
         <Route path="/" element={<MenuPage/>} />
         <Route path="/game"  element={<GamePage />} />

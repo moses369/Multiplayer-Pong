@@ -125,9 +125,9 @@ font-size: var(--sm-font);
   margin-top: .75em;
 }
 
-@media  (max-width:1000px) {
+/* @media  (max-width:40em) {
   .keyContainer,
   .mobileContainer {
 display: none;
   }
-}
+} */
