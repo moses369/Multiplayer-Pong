@@ -39,7 +39,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
           top: paddle.getBoundingClientRect().top,
           bottom: paddle.getBoundingClientRect().bottom,
         },
-        border: { bottom: document.body.clientHeight },
+        border: { bottom: window.innerHeight },
       };
       /**
        * @param delta number of which to translate by, (+) down, (-) up
@@ -49,12 +49,12 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
 
       /** Logic to determine to allow the paddle to move or not based off our border**/
       if (holdMove.current) {
-        if (directionRef.current === "up" && rects.paddle.top > 0) {
+        if (directionRef.current === "up" && rects.paddle.top > 2) {
           // Move the paddle up
           updateMove(-delta);
         } else if (
           directionRef.current === "down" &&
-          rects.paddle.bottom < rects.border.bottom
+          rects.paddle.bottom < rects.border.bottom - 2
         ) {
           // Move the paddle down
           updateMove(delta);
