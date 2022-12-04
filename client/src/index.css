@@ -8,6 +8,7 @@
   --md-font: min(2.5vw + 0.2rem, 1.25rem);
   --lg-font: min(3vw + 0.2rem, 1.5rem);
   --lg2-font: min(3.5 + 0.2rem, 1.75rem);
+  /* --screen-size: 100%; */
 }
 
 * {
@@ -16,7 +17,7 @@
   margin: 0;
 }
 .playSurface {
-  min-height: calc(100vh - (env(safe-area-inset-bottom)));
+  height:var(--screen-size);
   touch-action: none;
   overflow: hidden;
 }

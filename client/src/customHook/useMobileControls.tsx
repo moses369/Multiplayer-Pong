@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux";
 import { PlayerChoices } from "../util/types";
 import useEmitPaddleMove from "./useEmitPaddleMove";
+import useScreenSize from "./useScreenSize";
 interface MobileControl {
   (
     player: PlayerChoices,
@@ -21,7 +22,7 @@ const useMobileControls: MobileControl = (
 ) => {
   const {local,currPlayer} = useSelector((state: RootState) => ({currPlayer:state.menu.player , local:state.menu.local}));
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useRef<number>(window?.innerHeight);
+  const viewportHeight = useScreenSize()
   const ylocation = useRef<number>(0);
 
   const logic = (e: TouchEvent, player: PlayerChoices) => {

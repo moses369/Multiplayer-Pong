@@ -1,9 +1,10 @@
 import React, { useRef } from "react";
 import useEmitPaddleMove from "./useEmitPaddleMove";
+import useScreenSize from "./useScreenSize";
 
 const useMouseControls = () => {
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useRef<number>(window?.innerHeight);
+  const viewportHeight = useScreenSize()
   const ylocation = useRef<number>(0);
 
   const mouseControls = (e: React.MouseEvent<HTMLDivElement>) => {

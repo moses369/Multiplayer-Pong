@@ -8,7 +8,7 @@
     #0c1e2c
   );
   min-width: 100vw;
-  min-height: 100vh;
+  min-height: var(--screen-size);
   color: #78cce2;
   display: flex;
   flex-direction: column;

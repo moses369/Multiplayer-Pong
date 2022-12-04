@@ -26,3 +26,5 @@ export interface Devices {
   keys: "keyboard";
 }
 export const devices: Devices = { mobile: "mobile", keys: "keyboard" };
+
+export type screenSize = number

@@ -7,16 +7,17 @@ import TouchPoint from "../../components/ControllerPage/TouchPoint/TouchPoint";
 
 import "./ControllerPage.css";
 import useEmitPaddleMove from "../../customHook/useEmitPaddleMove";
+import useScreenSize from "../../customHook/useScreenSize";
+
 const ControllerPage = () => {
   const emitMove = useEmitPaddleMove();
-  const viewportHeight = useRef<number>(window?.innerHeight);
   const ylocation = useRef<number>(0)
-
+const screenSize = useScreenSize()
   
   const handleMovement = (e: React.TouchEvent<HTMLDivElement>) => {
     const touch = e.targetTouches.item(0);
     // Normalize the diplacement based off the center of the viewport
-    const touchY = touch.clientY / viewportHeight.current - 0.5;
+    const touchY = touch.clientY / screenSize.current - 0.5;
     if (touchY > -0.47 && touchY < 0.47) {
       touchY !== ylocation.current && emitMove(touchY, true, false);
       ylocation.current = touchY
