@@ -1,19 +1,19 @@
 
 
 .row.controlContainer {
-  justify-content: space-around;
-  font-size: clamp(.75rem,1.25rem,1.5rem);
+  justify-content: space-evenly;
+  font-size: var(--sm-font);
   
 }
 .playerIndicator{
-  font-size: 2rem;
+  font-size: var(--lg-font);
   margin-bottom: .25em;
   position: relative;
 }
 
 .samePlayer.playerIndicator::after{
   content:'You';
-font-size: 1rem;
+font-size: var(--sm-font);
   position: absolute;
   top: -50%;
   left: 0;
@@ -22,16 +22,14 @@ font-size: 1rem;
   z-index: 3;
 
 }
-.controlTitle{
-  font-size: 1.5rem;
-  margin: .25em 0;
-}
+
 .choosePlayerContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  width: 30%;
+  font-size: var(--sm-font);
+  width: 30vw;
 }
 .mobileIndicator {
   width: 5em;
@@ -92,7 +90,7 @@ font-size: 1rem;
   color: var(--primary-text);
 }
 .keyIndicator {
-  font-size: 1.25rem;
+  font-size:var(--md-font);
   min-width: 3em;
   min-height: 3em;
   background: transparent;
@@ -125,4 +123,11 @@ font-size: 1rem;
 .indicatorTitle{
   margin-bottom: .75em;
   margin-top: .75em;
+}
+
+@media  (max-width:600px) {
+  .keyContainer,
+  .mobileContainer {
+display: none;
+  }
 }

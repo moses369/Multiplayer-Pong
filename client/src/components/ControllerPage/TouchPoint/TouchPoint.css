@@ -1,6 +1,9 @@
-.neonButton.touchPoint{
+div.touchPoint{
     height: 100%;
-    font-size: 6rem;
+    font-size: 5rem;
     border: .05em solid currentColor;
     border-radius: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

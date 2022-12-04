@@ -3,6 +3,7 @@
   padding: 0 10%;
   align-items: center;
   margin-bottom: 3em;
+  gap: min(4vw,1.5rem);
 }
 
 .formInput {
@@ -13,7 +14,7 @@
 }
 
 input {
-  font-size: 1rem;
+  font-size: var(--sm-font);
 
   padding: 0.7em 0;
   margin: 0.5em 0;
@@ -26,7 +27,7 @@ input {
 
 #joinLabel {
   position: relative;
-  font-size: 1.5rem;
+  font-size: var(--lg-font);
   transition: text-shadow 100ms linear      ;
 }
 

@@ -1,7 +1,6 @@
 
 import React, { useCallback, useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux";
+import useEmitPaddleMove from "../../../customHook/useEmitPaddleMove";
 import { DirectionChoices, PlayerChoices } from "../../../util/types";
 import'./TouchPoint.css'
 
@@ -15,31 +14,28 @@ export interface sendMovePaddle {
   id: string;
 }
 const TouchPoint = ({ direction, Arrow }: Props) => {
-  const { socket,sessionId, player } = useSelector(
-    ({ socket: { socket }, menu:{sessionId,player} }: RootState) => ({ socket,sessionId,player })
-  );
   const holding = useRef<boolean>(false)
-  const normalize = (e:React.PointerEvent<HTMLButtonElement>) => {
-
-  }
+  const emitMove = useEmitPaddleMove()
   return (
-    <button
-    className="neonButton neonBorder neonText touchPoint"
-      onTouchStart={(e) => {
-        holding.current = true
-       //Tells the connected paddle to start moving in the given direction
-        socket.emit("MOVE_PADDLE", sessionId, direction, player,true); 
-      }}
-      onTouchEnd={(e) => {
-        holding.current = false
+    <div
+    className=" neonBorder neonText touchPoint"
+      // onTouchStart={(e) => {
+      //   holding.current = true
+      //  //Tells the connected paddle to start moving in the given direction
+      //   // socket.emit("MOVE_PADDLE", sessionId, direction, player,true,true); 
+      //   emitMove(direction,true,true)
+      // }}
+      // onTouchEnd={(e) => {
+      //   holding.current = false
       
-       //Tells the connected paddle to stop moving
-        socket.emit("MOVE_PADDLE", sessionId, direction, player,false);
-      }}
+      //  //Tells the connected paddle to stop moving
+      //   // socket.emit("MOVE_PADDLE", sessionId, direction, player,false,true);
+      //   emitMove(direction,false,true)
+      // }}
     
     >
-      {Arrow}
-    </button>
+      <>{Arrow}</>
+    </div>
   );
 };
 

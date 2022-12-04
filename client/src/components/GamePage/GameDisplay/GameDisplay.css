@@ -25,7 +25,7 @@
 }
 
 .scoreContainer{
-    font-size: 2rem;
+    font-size: min(2vh + .25rem,2rem);
 
     display: flex;
     justify-content: space-around;

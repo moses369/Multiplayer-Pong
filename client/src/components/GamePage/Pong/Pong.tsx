@@ -77,6 +77,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         /**
          *  add to horizontal sides for speed indescrepencies
          * */
+     
         const buffer = offsetRef.current.delta < 1.7 ? 7 : 9;
         const buffedPaddle = {
           left: directionRef.current.left
@@ -118,7 +119,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleRect =
           rects.paddles[directionRef.current.left ? "left" : "right"];
         const pongRect = rects.pong;
-        const pongHalfHeightBuffed = pongRect.height / 2 - 2 ;
+        const pongHeightThird = pongRect.height / 5 ;
         const paddleHeight = {
           eigth: paddleRect.height / 8,
           half: paddleRect.height / 2,
@@ -128,9 +129,9 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
 
         const paddleSection = {
           topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
-          topMid: paddleRect.top + paddleHeight.half - pongHalfHeightBuffed,
+          topMid: paddleRect.top + paddleHeight.half - pongHeightThird,
           bottomMid:
-            paddleRect.bottom - paddleHeight.half + pongHalfHeightBuffed,
+            paddleRect.bottom - paddleHeight.half + pongHeightThird,
           bottomCorner: paddleRect.bottom - paddleHeight.eigth * 2, // 2/8 of bottom of paddle 6/8
         };
         const paddleBounced = {

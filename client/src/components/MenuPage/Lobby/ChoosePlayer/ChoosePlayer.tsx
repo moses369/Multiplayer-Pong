@@ -45,7 +45,7 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
   };
 
   useEffect(() => {
-    // Updates the selected devices whenever a player connects 
+    // Updates the selected devices whenever a player connects
     socket.on("PLAYER_CONNECTED", (playerConnected, device) => {
       console.log(playerConnected, "connected", device);
       dispatch(updateSelectedDevice({ player: playerConnected, device }));
@@ -81,9 +81,8 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
         {`Player ${playerNum}`}
       </h2>
       <p>{playerNum === 1 ? "Left" : "Right"} Paddle </p>
-      <h3 className="controlTitle">Controls</h3>
       <div className="row controlContainer">
-        <div>
+        <div className="keyContainer">
           <h3 className="indicatorTitle">Keyboard</h3>
           <button
             className="keyBtn"
@@ -93,7 +92,6 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
                 (!local && isSamePlayer()) || local ? "auto" : "none", // If online dont allow the player to click the others controls
             }}
           >
-            
             <KeyBoardControl
               active={active}
               char={playerNum === 1 ? "W" : <AiOutlineArrowUp />}
@@ -103,13 +101,15 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
               char={playerNum === 1 ? "S" : <AiOutlineArrowDown />}
             />
           </button>
-        </div>
-        <div>
+        </div  >
+        <div className="mobileContainer" >
           <h3 className="indicatorTitle">Mobile</h3>
           <div
             className={`mobileIndicator neonBorder ${active(devices.mobile)}`}
           >
-            <span id="mobileText">{mobileCode[`player${playerNum}`]}</span>
+            {((!local && isSamePlayer()) || local) && (
+              <span id="mobileText">{mobileCode[`player${playerNum}`]}</span>
+            )}
           </div>
         </div>
       </div>

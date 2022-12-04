@@ -13,13 +13,14 @@ interface Lobby {
 const Lobby = ({ leave }: Lobby) => {
   const dispatch = useDispatch();
   const { host, sessionId, socket, local } = useSelector(
-    ({ menu: { host, sessionId, local }, socket: { socket } }: RootState) => ({
-      host,
-      sessionId,
-      socket,
-      local,
+    (state: RootState) => ({
+      host: state.menu.host,
+      sessionId: state.menu.sessionId,
+      socket: state.socket.socket,
+      local: state.menu.local,
     })
   );
+
   return (
     <div className="lobyyContainer neonBorder">
       <div className="row lobbyNav">
@@ -32,14 +33,13 @@ const Lobby = ({ leave }: Lobby) => {
 
         {host ? (
           <>
-            <SessionID />
+            <SessionID className="pcID" />
             <button
               className="neonButton neonText neonBorder changeSatusBtn"
               onClick={() => {
                 //Updates wether the session is local or online
                 socket.emit("UPDATE_LOCAL", sessionId);
                 dispatch(setLocal());
-                
               }}
             >
               {local ? "Local" : "Online"}
@@ -49,21 +49,28 @@ const Lobby = ({ leave }: Lobby) => {
           <SessionID />
         )}
       </div>
-      <div className="row lobbyPlayer" >
-
-      <ChoosePlayer playerNum={1} />
-      <ChoosePlayer playerNum={2} />
-      </div>
-      <StartButton />
+      <SessionID className="mobileID" />
+      <div>
+        <h3 className="controlTitle">Controls</h3>
+        <div className="row lobbyPlayer">
+          {" "}
+          <ChoosePlayer playerNum={1} />
+          <ChoosePlayer playerNum={2} />
+        </div>
     </div>
+        <StartButton />
+      </div>
   );
 };
 
 export default Lobby;
 
-const SessionID = () => {
+const SessionID = ({className}:{className:string}) => {
   const sessionId = useSelector(
     ({ menu: { sessionId } }: RootState) => sessionId
   );
-  return <h2>Session ID: {sessionId}</h2>;
+  return <h2 className={`${className} id`} >Session ID: {sessionId}</h2>;
 };
+SessionID.defaultProps = {
+  className:''
+}

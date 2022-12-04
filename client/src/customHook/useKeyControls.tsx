@@ -5,7 +5,7 @@ import {PlayerChoices} from '../util/types'
 interface KeyControlProp {
   (
     player: PlayerChoices,
-    directionRef: React.MutableRefObject<string>,
+    directionRef: React.MutableRefObject<string | number>,
     setPlayAnimation: React.Dispatch<React.SetStateAction<boolean>>
   ): void;
 }
@@ -21,11 +21,12 @@ const useKeyControls: KeyControlProp = (
   directionRef,
   setPlayAnimation
 ) => {
-  const { socket, local, sessionId } = useSelector(
-    ({ socket: { socket }, menu: { local, sessionId } }: RootState) => ({
+  const { socket, local, sessionId, currPlayer } = useSelector(
+    ({ socket: { socket }, menu: { local, sessionId,player } }: RootState) => ({
       socket,
       local,
       sessionId,
+      currPlayer:player
     })
   );
   /**
@@ -37,7 +38,7 @@ const useKeyControls: KeyControlProp = (
       setPlayAnimation(move);
     } else {
       // if not local only move through socket events to help normlaize the response in the sending and opposite player 
-      socket.emit("MOVE_PADDLE", sessionId, direction, player, move,true);
+      currPlayer === player && socket.emit("MOVE_PADDLE", sessionId, direction, player, move,true);
     }
   };
 /**

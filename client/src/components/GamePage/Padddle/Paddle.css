@@ -1,7 +1,7 @@
 .paddle{
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 47vh;
+
     min-height: 6vh;
    
     width: .1vw;
@@ -9,10 +9,21 @@
     z-index: 5;
     border-radius: 4px;
 }
+.paddle::after,.paddle::before{
+    content: '';
+    position: inherit;
 
+    width: 4vw;
+    min-height:16vh ;
+    background-color: transparent;
+    transform: translateY(-5vh);
+}
+.paddle::before{
+    transform: translate(-4vw,-5vh);
+}
 .left{
-    left: 4vw;
+    left: 5vw;
 }
 .right{
-    right:4vw;
+    right:5vw;
 }

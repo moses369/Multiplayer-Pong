@@ -7,7 +7,7 @@ import {
 } from "../../../../redux/features/menu-slice";
 import { PlayerOptions } from "../../../../util/types";
 
-import "./Menu.css";
+import "./MenuNav.css";
 
 const MenuNav = () => {
   const dispatch = useDispatch();
@@ -65,7 +65,7 @@ const MenuNav = () => {
           className="neonBorder neonText"
             type="text"
             name="join"
-            placeholder="Session ID"
+            placeholder="Session/Mobile ID"
             autoComplete="off"
             maxLength={6}
             value={joinVal}

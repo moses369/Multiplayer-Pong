@@ -1,9 +1,10 @@
 .serverContainer {
   min-height: 65vh;
-  max-height: 65vh;
-  min-width: 90vw;
+ 
+  min-width: 30vw;
   overflow-y: scroll;
   position: relative;
+  font-size: var(--md-font);
 }
 
 .serverContainer::-webkit-scrollbar {
@@ -23,10 +24,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
+  /* font-size: 2rem; */
 }
 table {
-  font-size: 1.2rem;
+  font-size:  var(--lg-font);
   width: 100%;
   max-height: 100%;
   text-align: center;
@@ -34,7 +35,7 @@ table {
 }
 
 table th {
-  font-size: 1.5rem;
+  /* font-size: 1.5rem; */
   padding: 0.5em;
 }
 

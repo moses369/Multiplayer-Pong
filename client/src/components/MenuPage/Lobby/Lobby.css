@@ -1,15 +1,16 @@
 .lobyyContainer{
     padding: 2em;
     padding-bottom: 3.5em;
-    width: 70%;
-    height: 90%;
+    min-width: 70vw;
+    min-height:80vh ;
+    
     display: flex;
     flex-direction: column;
     justify-content: space-between;
    
 }
 .lobbyNav{
-    font-size: 1.25rem;
+    font-size: var(--md-font);
     margin-bottom: 1.2em;
 }
 
@@ -21,3 +22,25 @@
 .changeSatusBtn{
     width: 5.5em;
 }
+.controlTitle{
+    font-size: var(--lg-font);
+    margin: .25em 0;
+    text-align: center;
+  }
+  .mobileID{
+    display: none;
+
+}
+.id{
+    font-size: var(--lg-font);
+}
+
+  @media (max-width:850px) {
+    .mobileID{
+        display: inline-block;
+        text-align: center;
+    }
+    .pcID{
+        display: none;
+    }
+  }

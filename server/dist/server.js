@@ -233,10 +233,10 @@ io.on("connection", (socket) => {
     /**
      * Listens for when to move the paddle in multiplayer sessions, or from mobile controllers
      */
-    socket.on("MOVE_PADDLE", (id, direction, player, move, keys) => {
+    socket.on("MOVE_PADDLE", (id, direction, player, move, holding) => {
         console.log("MOVINIG", { player, id, direction, move });
-        socket.to(id).emit("MOVING_PADDLE", direction, player, move);
-        keys && socket.emit("MOVING_PADDLE", direction, player, move);
+        socket.to(id).emit("MOVING_PADDLE", direction, player, move, holding);
+        socket.emit("MOVING_PADDLE", direction, player, move, holding);
     });
     /**
      * Gets all the active sessions and sends them back to the client to fill their server list
