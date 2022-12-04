@@ -29,7 +29,7 @@ const ControllerPage = () => {
 
   return (
     <div
-      className="controllerPageContainer"
+      className="controllerPageContainer playSurface"
       // onPointerDown={(e) =>{
       //   console.log('start')
       // }}

@@ -15,7 +15,11 @@
   outline: none;
   margin: 0;
 }
-
+.playSurface{
+  min-height: calc(var(--vh, 1vh) * 100);
+  touch-action: none;
+  overflow: hidden;
+}
 button{
   cursor: pointer;
 }

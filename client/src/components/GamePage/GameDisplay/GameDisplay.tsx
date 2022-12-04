@@ -43,7 +43,7 @@ const GameDisplay = () => {
   return (
     <>
       <div
-        className="gameContainer"
+        className="gameContainer playSurface"
         onMouseMove={(e: React.MouseEvent<HTMLDivElement>) => {
           !local && mouseControls(e);
         }}

@@ -1,21 +1,21 @@
-.controllerPageContainer{
-    min-width: 100vw;
-    min-height: 100vh;
-    overflow: hidden;
-    background: var(--primary-background);
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   position: relative;
-   
+.controllerPageContainer {
+  min-width: 100vw;
+
+  overflow: hidden;
+  background: var(--primary-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+
 }
 
-.controllerPageContainer:after{
-    content: '';
-    width: 100vw;
-    height: .1rem;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: var(--primary-text);
+.controllerPageContainer:after {
+  content: "";
+  width: 100vw;
+  height: 0.1rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--primary-text);
 }
