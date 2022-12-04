@@ -27,18 +27,23 @@ const useMobileControls: MobileControl = (
   const emitMove = useEmitPaddleMove();
   const viewportHeight = useScreenSize();
   const ylocation = useRef<number>(0);
-
+  const paddleHeightHalf =
+    paddle.current && paddle.current.getBoundingClientRect().height / 2;
   const logic = (e: TouchEvent, player: PlayerChoices) => {
     const touch = e.targetTouches.item(0);
 
     if (
       touch &&
+      paddleHeightHalf &&
       touch.target === paddle.current &&
       (local || (!local && currPlayer === player))
     ) {
       // Normalize the diplacement based off the center of the viewport
       const touchY = touch.clientY / viewportHeight.current - 0.5;
-      if (touchY > -0.47 && touchY < 0.47) {
+      if (
+        touch.clientY > paddleHeightHalf &&
+        touch.clientY < viewportHeight.current - paddleHeightHalf
+      ) {
         if (local) {
           holdMove.current = false;
           slideDelta.current = touchY;
@@ -47,7 +52,7 @@ const useMobileControls: MobileControl = (
           touchY !== ylocation.current && emitMove(touchY, true, false, player);
         }
         ylocation.current = touchY;
-      } else {
+      } else if(!local) {
         emitMove(touchY, false, false, player);
       }
     }
