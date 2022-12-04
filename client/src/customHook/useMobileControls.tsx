@@ -39,10 +39,11 @@ const useMobileControls: MobileControl = (
       // Normalize the diplacement based off the center of the viewport
       const touchY = touch.clientY / viewportHeight.current - 0.5;
       if (touchY > -0.47 && touchY < 0.47) {
-        holdMove.current = false;
-        slideDelta.current = touchY;
-        setPlayAnimation(true);
-        if (!local) {
+        if (local) {
+          holdMove.current = false;
+          slideDelta.current = touchY;
+          setPlayAnimation(true);
+        } else {
           touchY !== ylocation.current && emitMove(touchY, true, false, player);
         }
         ylocation.current = touchY;

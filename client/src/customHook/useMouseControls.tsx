@@ -13,10 +13,8 @@ const useMouseControls = () => {
   const mouseControls = (e: React.MouseEvent<HTMLDivElement>) => {
     // Normalize the diplacement based off the center of the viewport
     const clientY = e.clientY / viewportHeight.current - 0.5;
-    console.log(clientY);
-    
     if (clientY > -0.47 && clientY < 0.47) {
-     !local && clientY !== ylocation.current && emitMove(clientY, true, false);
+     clientY !== ylocation.current && emitMove(clientY, true, false);
       ylocation.current = clientY;
       console.log(clientY);
     } else {
