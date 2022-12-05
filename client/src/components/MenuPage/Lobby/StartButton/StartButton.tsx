@@ -7,16 +7,14 @@ import "./StartButton.css";
 const StartButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { socket, host, local, sessionId, isMobile } = useSelector(
-    ({
-      socket: { socket },
-      menu: { host, local, sessionId, isMobile },
-    }: RootState) => ({
-      socket,
-      host,
-      local,
-      sessionId,
-      isMobile,
+  const { socket, host, local, sessionId, isMobile,readyStatus } = useSelector(
+    (state: RootState) => ({
+      socket:state.socket.socket,
+      host:state.menu.host,
+      local:state.menu.local,
+      sessionId:state.menu.sessionId,
+      isMobile:state.menu.isMobile,
+      readyStatus:state.menu.readyStatus
     })
   );
   const [allReady, setAllReady] = useState<boolean>(false); //Determines if everyone readyed up
@@ -25,19 +23,17 @@ const StartButton = () => {
    */
   useEffect(() => {
     setAllReady(local);
-  }, [local]);
+    if(readyStatus.player1 && readyStatus.player2){
+      setAllReady(true)
+    }
+  }, [local,readyStatus]);
 
   /**
    * Listens for socket events
    */
   useEffect(() => {
-    // If all players connected set ready to start to true
-    socket.on("READY_TO_START", () => {
-      setAllReady(true);
-      console.log("Ready");
-    });
     // If a mobile phone controller disconnected set it to false
-    socket.on("MOBILE_DISCONNECT", () => {
+    socket.on("PLAYER_DISCONNECTED", () => {
       setAllReady(false);
     });
 
@@ -51,8 +47,7 @@ const StartButton = () => {
     }
     return () => {
       socket.removeListener("START_GAME");
-      socket.removeListener("READY_TO_START");
-      socket.removeListener("MOBILE_DISCONNECT");
+      socket.removeListener("PLAYER_DISCONNECTED");
     };
   }, [socket, setAllReady, host, isMobile]);
 

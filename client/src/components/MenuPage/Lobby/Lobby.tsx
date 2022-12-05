@@ -1,6 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
-import { setLocal, updateSelectedDevice } from "../../../redux/features/menu-slice";
+import {
+  setLocal,
+  updateMobileConnection,
+} from "../../../redux/features/menu-slice";
 
 import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
@@ -22,7 +25,7 @@ const Lobby = ({ leave }: Lobby) => {
   );
 
   return (
-    <div className="lobyyContainer neonBorder">
+    <div className={`${!host && 'guest'} lobyyContainer neonBorder`}>
       <div className="row lobbyNav">
         <button
           className="neonButton neonText neonBorder"
@@ -40,7 +43,12 @@ const Lobby = ({ leave }: Lobby) => {
                 //Updates wether the session is local or online
                 socket.emit("UPDATE_LOCAL", sessionId);
                 dispatch(setLocal());
-                dispatch(updateSelectedDevice({player:'player2',device:''}))
+                dispatch(
+                  updateMobileConnection({
+                    player: "player2",
+                    mobileConnected: false,
+                  })
+                );
               }}
             >
               {local ? "Local" : "Online"}
@@ -59,7 +67,7 @@ const Lobby = ({ leave }: Lobby) => {
           <ChoosePlayer playerNum={2} />
         </div>
       </div>
-      <StartButton />
+     <StartButton />
     </div>
   );
 };

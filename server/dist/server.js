@@ -66,9 +66,10 @@ io.on("connection", (socket) => {
         const generatedId = checkIdIsNotTaken(); //The generated id
         //Creates a empty player object for the session object
         const player = () => ({
-            device: "",
+            mobile: false,
             mobileCode: createMobileCode(generatedId),
             socketId: "",
+            ready: false,
         });
         //Generates an initial session object
         sessions[generatedId] = {
@@ -115,26 +116,15 @@ io.on("connection", (socket) => {
          */
         if (session || (sessions[sessionID].local && id.length > 4)) {
             /**
-             * Checks if the connected players have already selected a device and send it back to the client
-             */
-            const checkForDeviceConnections = (player) => {
-                session[player].device &&
-                    socket.emit("PLAYER_CONNECTED", player, session[player].device);
-            };
-            /**
              * Used to join mobile phone controllers to the server
              */
             const joinMobile = (player) => {
                 //If the mobile code is the same as the one sent connect the client to that session
                 if (session[player].mobileCode === id) {
-                    sessions[sessionID][player].device = "mobile";
+                    sessions[sessionID][player].mobile = true;
                     sessions[sessionID][player].socketId = socket.id;
                     socket.emit("CONNECT_MOBILE", player); // tells the client to send the user to the controller page
-                    socket.to(sessionID).emit("PLAYER_CONNECTED", player, "mobile"); //Tells other player that the phone connected
-                }
-                // If both devices are set then send the host a ready to start event
-                if (session.player1.device && session.player2.device) {
-                    socket.to(sessions[sessionID].host).emit("READY_TO_START");
+                    socket.to(sessionID).emit("PLAYER_CONNECTED", player, true); //Tells other player that the phone connected
                 }
             };
             // if a player is just joining as a second playe and not controller tell the users to update the server with a connected player
@@ -145,12 +135,15 @@ io.on("connection", (socket) => {
                 );
             }
             //Checks for device connections to emit and if the players joined on their mobile
-            checkForDeviceConnections("player1");
-            checkForDeviceConnections("player2");
+            /**
+             * Checks if the connected players have already selected a device and send it back to the client
+             */
+            session.player1.mobile &&
+                socket.emit("PLAYER_CONNECTED", "player1", true);
             joinMobile("player1");
             joinMobile("player2");
             socket.join(sessionID);
-            io.to(session.host).emit("PLAYER_CONNECTED", "player2", session.player2.device);
+            io.to(session.host).emit("PLAYER_CONNECTED", "player2", false);
             console.log(` joined session ${sessionID}`, session);
             console.log(io.sockets.adapter.rooms.get(sessionID), "\n");
         }
@@ -180,29 +173,14 @@ io.on("connection", (socket) => {
             }
             else if (socket.id === sessions[id].guest) {
                 sessions[id].guest = "";
-                sessions[id].player2.device = "";
-                socket.to(id).emit("PLAYER_DISCONNENCTED");
+                sessions[id].player2.mobile = false;
+                socket.to(id).emit("PLAYER_DISCONNECTED");
                 socket.broadcast.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 1 }, true, // if the session is already on the server list client side
                 false // if the session is being deleted
                 );
             }
             console.log(`${socket.id} left room ${id}`);
             console.log(`${noHost ? "deleted" : "left"} room ${id} \n`);
-        }
-    });
-    /**
-     * Listens for when  player selects/ connects their device
-     */
-    socket.on("CONNECT_PLAYER", (id, player, device) => {
-        // Lets the client know a device connected and updates the session info
-        sessions[id][player].device = device;
-        socket.to(id).emit("PLAYER_CONNECTED", player, device);
-        console.log(`${id} room ${player} connected to ${device}`);
-        console.log(`${sessions[id][player]} `);
-        // if both devices have been selected lets the host know they can start
-        if (sessions[id].player1.device && sessions[id].player2.device) {
-            socket.to(sessions[id].host).emit("READY_TO_START");
-            console.log(id, "Players ready \n");
         }
     });
     /**
@@ -225,6 +203,18 @@ io.on("connection", (socket) => {
             )
             : socket.broadcast.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 1 }, false // if the session is already on the server list client side
             );
+    });
+    /**
+     * Listens for when a player Ready's up
+     */
+    socket.on("PLAYER_READY", (id, player) => {
+        sessions[id][player].ready = !sessions[id][player].ready;
+        socket.to(id).emit("PLAYER_READY_UP", player);
+        console.log(` Session ${id} player Ready ${player}\n`);
+        if (sessions[id].player1.ready && sessions[id].player2.ready) {
+            socket.to(id).emit("READY_TO_START");
+            console.log('Session Ready to start', id, '\n');
+        }
     });
     /**
      * Listens for when a host starts the game and wants to let the guest know

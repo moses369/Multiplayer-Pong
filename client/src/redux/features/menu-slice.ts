@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { PlayerOptions,PlayerChoices, players } from "../../util/types";
-
+import { PlayerOptions, PlayerChoices, players } from "../../util/types";
+import { stat } from "fs";
 
 export interface MenuState {
   host: boolean;
@@ -11,7 +11,8 @@ export interface MenuState {
   inSession: boolean;
   mobileCode: PlayerOptions<string>;
   isMobile: boolean;
-  deviceSelected: PlayerOptions<string>;
+  mobileConnected: PlayerOptions<boolean>;
+  readyStatus: PlayerOptions<boolean>;
 }
 
 const initialState: MenuState = {
@@ -22,7 +23,8 @@ const initialState: MenuState = {
   player: players.one,
   inSession: false,
   mobileCode: { player1: "", player2: "" },
-  deviceSelected: { player1: "", player2: "" },
+  mobileConnected: { player1: false, player2: false },
+  readyStatus: { player1: false, player2: false },
 };
 interface SessionInfo {
   sessionId: string;
@@ -32,7 +34,6 @@ export const menuSlice = createSlice({
   name: "menu-slice",
   initialState,
   reducers: {
-
     createSession(
       state,
       { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>
@@ -53,6 +54,9 @@ export const menuSlice = createSlice({
       state.mobileCode = mobileCodes;
     },
     leaveSession(state) {
+      state.readyStatus = state.host
+        ? { player1: false, player2: false }
+        : { ...state.readyStatus, player2: false };
       state.host = false;
       state.local = false;
       state.isMobile = false;
@@ -60,7 +64,7 @@ export const menuSlice = createSlice({
       state.player = players.one;
       state.inSession = false;
       state.mobileCode = { player1: "", player2: "" };
-      state.deviceSelected = { player1: "", player2: "" };
+      state.mobileConnected = { player1: false, player2: false };
     },
 
     setLocal(state) {
@@ -70,14 +74,18 @@ export const menuSlice = createSlice({
       state.isMobile = true;
       state.player = action.payload;
     },
-    updateSelectedDevice(
+    updateMobileConnection(
       state,
       action: PayloadAction<{
         player: PlayerChoices;
-        device: "keyboard" | "mobile" | '';
+        mobileConnected: boolean;
       }>
     ) {
-      state.deviceSelected[`${action.payload.player}`] = action.payload.device;
+      state.mobileConnected[`${action.payload.player}`] =
+        action.payload.mobileConnected;
+    },
+    toggleReady(state, action: PayloadAction<PlayerChoices>) {
+      state.readyStatus[action.payload] = !state.readyStatus[action.payload];
     },
   },
 });
@@ -89,7 +97,8 @@ export const {
   leaveSession,
   setLocal,
   isController,
-  updateSelectedDevice,
+  updateMobileConnection,
+  toggleReady,
 } = menuSlice.actions;
 
 export default menuSlice.reducer;
