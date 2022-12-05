@@ -1,0 +1,16 @@
+.rules{
+    font-size: var(--md-font);
+    padding: 1em;
+    width: fit-content;
+    max-width: 40ch;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+.rulesTitle{
+    margin-bottom: 1em;
+}
+
+.ruleContent  li{
+margin-bottom: 1.2em;
+}
