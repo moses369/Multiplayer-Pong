@@ -7,7 +7,7 @@
   --sm-font: min(2vw + 0.2rem, 1rem);
   --md-font: min(2.5vw + 0.2rem, 1.25rem);
   --lg-font: min(3vw + 0.2rem, 1.5rem);
-  --lg2-font: min(3.5 + 0.2rem, 1.75rem);
+  --lg2-font: min(3.5vw + 0.2rem, 1.75rem);
   /* --screen-size: 100%; */
 }
 
@@ -15,14 +15,22 @@
   box-sizing: border-box;
   outline: none;
   margin: 0;
+  padding: 0;
+}
+button {
+  cursor: pointer;
+}
+h2{
+  font-size: var(--lg2-font);
+}
+li{
+  font-size: var(--md-font);
+  list-style: none;
 }
 .playSurface {
   height:var(--screen-size);
   touch-action: none;
   overflow: hidden;
-}
-button {
-  cursor: pointer;
 }
 .row {
   display: flex;
@@ -55,6 +63,7 @@ button {
   right: 0;
   bottom: 0;
   background-color: var(--piece-color);
+  border-radius: inherit;
 
   box-shadow: 0 0 2em 0.5em var(--piece-color);
   opacity: 0;

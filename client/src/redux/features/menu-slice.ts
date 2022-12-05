@@ -74,7 +74,7 @@ export const menuSlice = createSlice({
       state,
       action: PayloadAction<{
         player: PlayerChoices;
-        device: "keyboard" | "mobile";
+        device: "keyboard" | "mobile" | '';
       }>
     ) {
       state.deviceSelected[`${action.payload.player}`] = action.payload.device;

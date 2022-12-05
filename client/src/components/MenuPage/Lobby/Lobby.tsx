@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
-import { setLocal } from "../../../redux/features/menu-slice";
+import { setLocal, updateSelectedDevice } from "../../../redux/features/menu-slice";
 
 import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
@@ -40,6 +40,7 @@ const Lobby = ({ leave }: Lobby) => {
                 //Updates wether the session is local or online
                 socket.emit("UPDATE_LOCAL", sessionId);
                 dispatch(setLocal());
+                dispatch(updateSelectedDevice({player:'player2',device:''}))
               }}
             >
               {local ? "Local" : "Online"}
@@ -49,7 +50,7 @@ const Lobby = ({ leave }: Lobby) => {
           <SessionID />
         )}
       </div>
-      <SessionID className="mobileID" />
+      {host && <SessionID className="mobileID" />}
       <div>
         <h3 className="controlTitle">Controls</h3>
         <div className="row lobbyPlayer">
@@ -57,20 +58,20 @@ const Lobby = ({ leave }: Lobby) => {
           <ChoosePlayer playerNum={1} />
           <ChoosePlayer playerNum={2} />
         </div>
-    </div>
-        <StartButton />
       </div>
+      <StartButton />
+    </div>
   );
 };
 
 export default Lobby;
 
-const SessionID = ({className}:{className:string}) => {
+const SessionID = ({ className }: { className: string }) => {
   const sessionId = useSelector(
     ({ menu: { sessionId } }: RootState) => sessionId
   );
-  return <h2 className={`${className} id`} >Session ID: {sessionId}</h2>;
+  return <h2 className={`${className} id`}>Session ID: {sessionId}</h2>;
 };
 SessionID.defaultProps = {
-  className:''
-}
+  className: "",
+};

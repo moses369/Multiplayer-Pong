@@ -5,7 +5,6 @@ const useScreenSize = (paddle?: React.RefObject<HTMLDivElement>) => {
   const paddleHeightHalf = useRef<number>(0);
   const getScreenSize = () => {
     let vh = window.innerHeight;
-    console.log("viewport");
     document.documentElement.style.setProperty("--screen-size", `${vh}px`);
     screenSize.current = vh;
     if (paddle?.current) {

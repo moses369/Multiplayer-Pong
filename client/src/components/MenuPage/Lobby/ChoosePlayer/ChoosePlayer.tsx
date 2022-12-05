@@ -12,21 +12,17 @@ interface ChoosePlayerProps {
 
 const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
   const dispatch = useDispatch();
-  const { sessionId, socket, player, mobileCode, local, deviceSelected } =
-    useSelector(
-      ({
-        menu: { sessionId, player, mobileCode, local, deviceSelected },
-        socket: { socket },
-      }: RootState) => ({
-        sessionId,
-        socket,
-        player,
-        mobileCode,
-        local,
-        deviceSelected,
-      })
-    );
-
+  const { sessionId, socket, player, mobileCode, local, deviceSelected, host } =
+    useSelector((state: RootState) => ({
+      sessionId: state.menu.sessionId,
+      socket: state.socket.socket,
+      player: state.menu.player,
+      mobileCode: state.menu.mobileCode,
+      local: state.menu.local,
+      deviceSelected: state.menu.deviceSelected,
+      host: state.menu.host,
+    }));
+  const [guestConnected, setGuestConnected] = useState(false);
   const accessDeviceSelected = () => deviceSelected[`player${playerNum}`];
   const isSamePlayer = () => playerNum === parseInt(player[6]);
   /**
@@ -47,8 +43,13 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
   useEffect(() => {
     // Updates the selected devices whenever a player connects
     socket.on("PLAYER_CONNECTED", (playerConnected, device) => {
+      host && setGuestConnected(true);
       console.log(playerConnected, "connected", device);
       dispatch(updateSelectedDevice({ player: playerConnected, device }));
+    });
+    socket.on("PLAYER_DISCONNECTED", () => {
+      host && setGuestConnected(false);
+      dispatch(updateSelectedDevice({ player: "player2", device: "" }));
     });
     // When a mobile phone disconnects update the devices selected
     socket.on("MOBILE_DISCONNECT", (player1Device, player2Device) => {
@@ -73,14 +74,23 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
     accessDeviceSelected() === device && "active";
   return (
     <div className="choosePlayerContainer">
+  
       <h2
         className={`playerIndicator ${
           !local && isSamePlayer() && "samePlayer" //Adds an indicator to show which player the player connected is
-        }`}
+        }
+        ${!host && playerNum === 1 && "hostInd"}
+        ${playerNum === 2 && guestConnected && "connectedInd"}
+    
+        `}
       >
-        {`Player ${playerNum}`}
+        {`Player ${playerNum} `}
       </h2>
-      <p>{playerNum === 1 ? "Left" : "Right"} Paddle </p>
+        
+   
+      <p>
+        {playerNum === 1 ? "Left" : "Right"} Paddle{" "}
+      </p>
       <div className="row controlContainer">
         <div className="keyContainer">
           <h3 className="indicatorTitle">Keyboard</h3>
@@ -101,8 +111,8 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
               char={playerNum === 1 ? "S" : <AiOutlineArrowDown />}
             />
           </button>
-        </div  >
-        <div className="mobileContainer" >
+        </div>
+        <div className="mobileContainer">
           <h3 className="indicatorTitle">Mobile</h3>
           <div
             className={`mobileIndicator neonBorder ${active(devices.mobile)}`}

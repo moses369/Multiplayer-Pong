@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../../redux";
@@ -10,6 +10,8 @@ import Lobby from "../../components/MenuPage/Lobby/Lobby";
 import "./MenuPage.css";
 import { PlayerChoices } from "../../util/types";
 import ServerSelect from "../../components/MenuPage/MainMenu/ServerSelect/ServerSelect";
+import Rules from "../../components/MenuPage/MainMenu/Rules/Rules";
+import ReactModal from "react-modal";
 
 const MenuPage = () => {
   const dispatch = useDispatch();
@@ -26,6 +28,7 @@ const MenuPage = () => {
       local,
     })
   );
+  const [showRules, setShowRules] = useState(false);
   /**
    * Used to leave the session
    */
@@ -56,16 +59,36 @@ const MenuPage = () => {
       socket.removeListener("CONNECT_MOBILE");
     };
   }, []);
+  const toggleModal = () => {
+    setShowRules((show) => !show)
+  }
   return (
     <div className="menu neonText">
       <h1 id="title">PONG</h1>
       {!inSession ? (
         <>
           <MenuNav />
-          <ServerSelect />
+        <button onClick={toggleModal} className="neonText neonButton neonBorder help">?</button>
+
+          <div className="row menuBody">
+            <ServerSelect />
+            <span id="notInModal">
+              {" "}
+              <Rules />
+            </span>
+          </div>
+          <ReactModal
+          onRequestClose={toggleModal}
+            className={"rulesModal neonBorder centerAbs neonText"}
+            overlayClassName={`rulesModalOverlay`}
+            isOpen={showRules}
+            children={<Rules inModal />}
+          />
         </>
       ) : (
-        <Lobby leave={leave} />
+        <>
+          <Lobby leave={leave} />
+        </>
       )}
     </div>
   );

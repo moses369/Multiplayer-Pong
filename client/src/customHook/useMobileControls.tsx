@@ -54,9 +54,6 @@ const useMobileControls: MobileControl = (
         ylocation.current = touchY;
       } else if(!local) {
         emitMove(touchY, false, false, player);
-      }else{
-        console.log('no good');
-
       }
     }
   };

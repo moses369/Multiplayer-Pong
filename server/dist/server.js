@@ -150,6 +150,7 @@ io.on("connection", (socket) => {
             joinMobile("player1");
             joinMobile("player2");
             socket.join(sessionID);
+            io.to(session.host).emit("PLAYER_CONNECTED", "player2", session.player2.device);
             console.log(` joined session ${sessionID}`, session);
             console.log(io.sockets.adapter.rooms.get(sessionID), "\n");
         }
@@ -179,6 +180,8 @@ io.on("connection", (socket) => {
             }
             else if (socket.id === sessions[id].guest) {
                 sessions[id].guest = "";
+                sessions[id].player2.device = "";
+                socket.to(id).emit("PLAYER_DISCONNENCTED");
                 socket.broadcast.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 1 }, true, // if the session is already on the server list client side
                 false // if the session is being deleted
                 );

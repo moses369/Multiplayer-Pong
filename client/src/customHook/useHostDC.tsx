@@ -19,8 +19,17 @@ const useHostDC = () => {
   /**
    * If player is not in a session and not already in the menu, move them to the menu
    */
+  const goHomeIfNotinSesison = () => {
+    if (location.pathname !== "/" && !inSession) {
+      navigate("/");
+      dispatch(leaveSession());
+    }
+  };
   useEffect(() => {
-    location.pathname !== "/" && !inSession && navigate("/");
+    goHomeIfNotinSesison();
+    return () => {
+      goHomeIfNotinSesison();
+    };
   }, [inSession]);
   /**
    * If the host discontted reset the session info and delete it from the users server list
@@ -33,9 +42,9 @@ const useHostDC = () => {
       dispatch(deleteServer(sessionId));
       dispatch(leaveSession());
     });
-    return() => {
-      socket.removeListener('HOST_DISCONNECTED')
-    }
+    return () => {
+      socket.removeListener("HOST_DISCONNECTED");
+    };
   }, [sessionId]);
 };
 

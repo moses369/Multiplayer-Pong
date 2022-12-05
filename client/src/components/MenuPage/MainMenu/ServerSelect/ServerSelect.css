@@ -1,7 +1,7 @@
 .serverContainer {
   min-height: 65vh;
  
-  min-width: 30vw;
+  /* min-width: 30vw; */
   overflow-y: scroll;
   position: relative;
   font-size: var(--md-font);
