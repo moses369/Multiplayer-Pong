@@ -35,7 +35,11 @@ const MenuPage = () => {
     if (sessionId) {
       console.log("left");
 
-      socket.emit("LEAVE_SESSION", sessionId);
+      socket.emit(
+        "LEAVE_SESSION",
+        sessionId,
+        sessionStorage.getItem(sessionId)
+      );
       dispatch(leaveSession());
     }
   }, [sessionId]);
@@ -54,20 +58,26 @@ const MenuPage = () => {
 
       navigate("/controller");
     });
+  
     return () => {
       socket.removeListener("CONNECT_MOBILE");
     };
   }, []);
   const toggleModal = () => {
-    setShowRules((show) => !show)
-  }
+    setShowRules((show) => !show);
+  };
   return (
     <div className="menu neonText">
       <h1 id="title">PONG</h1>
       {!inSession ? (
         <>
           <MenuNav />
-        <button onClick={toggleModal} className="neonText neonButton neonBorder help">?</button>
+          <button
+            onClick={toggleModal}
+            className="neonText neonButton neonBorder help"
+          >
+            ?
+          </button>
 
           <div className="row menuBody">
             <ServerSelect />
@@ -77,7 +87,7 @@ const MenuPage = () => {
             </span>
           </div>
           <ReactModal
-          onRequestClose={toggleModal}
+            onRequestClose={toggleModal}
             className={"rulesModal neonBorder centerAbs neonText"}
             overlayClassName={`modalOverlay`}
             isOpen={showRules}

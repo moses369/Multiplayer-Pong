@@ -8,6 +8,9 @@
     margin: .25em 0;
     text-align: center;
   }
+  .inLobby .controlTextContainer {
+    text-align: center;
+  }
   .controlTextContainer{
     margin-bottom: .75em;
   }

@@ -1,1 +1,10 @@
 
+.hostDCModal{
+    background-color: var(--primary-background);
+    text-align: center;
+    padding: 1rem 1.5rem;
+}
+
+.hostDCModal > h2{
+    margin-bottom: 1em;
+}

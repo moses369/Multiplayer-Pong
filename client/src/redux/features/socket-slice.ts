@@ -13,6 +13,17 @@ const initialState: SocketState = {
   socket: io(socketServer),
 };
 
+const sessionJSON = sessionStorage.getItem("session");
+if (sessionJSON !== null) {
+  const session = JSON.parse(sessionJSON);
+  const role = sessionStorage.getItem(session.sessionId);
+  console.log(role);
+  
+  if (role) {
+    initialState.socket.emit("RE_JOIN", session.sessionId, role);
+  }
+}
+
 export const socketSlice = createSlice({
   name: "socket-slice",
   initialState,

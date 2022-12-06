@@ -11,6 +11,7 @@ import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
 import ControlsDisplay, { SlideControls } from './ControlsDisplay/ControlsDisplay'
 import "./Lobby.css";
+import { updateServer } from "../../../redux/features/serverList-slice";
 
 interface Lobby {
   leave: () => void;

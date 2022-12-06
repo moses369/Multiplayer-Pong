@@ -9,28 +9,25 @@
   width: fit-content;
   align-self: center;
 }
+.playerIndicator::after,
 .playerIndicator::before {
-  font-size: var(--sm-font);
-  position: absolute;
-  top: 25%;
-}
-.hostInd.playerIndicator::before{
-  content: 'Host';
-  right: -6ch;
-
-}
-.connectedInd.playerIndicator::before{
-  content: 'Joined';
-  right: -8ch;
-}
-.samePlayer.playerIndicator::after {
-  content: "You";
   font-size: var(--sm-font);
   position: absolute;
   top: -50%;
   left: 0;
   width: 100%;
   height: 100%;
+}
+.hostInd.playerIndicator::before{
+  content: 'Host';
+
+}
+.connectedInd.playerIndicator::before{
+  content: 'Joined';
+
+}
+.samePlayer.playerIndicator::after {
+  content: "You";
 }
 
 .choosePlayerContainer {

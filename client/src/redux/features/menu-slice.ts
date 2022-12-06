@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { PlayerOptions, PlayerChoices, players } from "../../util/types";
-import { stat } from "fs";
 
 export interface MenuState {
   host: boolean;
@@ -14,18 +13,21 @@ export interface MenuState {
   mobileConnected: PlayerOptions<boolean>;
   readyStatus: PlayerOptions<boolean>;
 }
-
-const initialState: MenuState = {
-  host: false,
-  local: false,
-  isMobile: false,
-  sessionId: "",
-  player: players.one,
-  inSession: false,
-  mobileCode: { player1: "", player2: "" },
-  mobileConnected: { player1: false, player2: false },
-  readyStatus: { player1: false, player2: false },
-};
+const sessionJSON = sessionStorage.getItem("session");
+const initialState: MenuState =
+  sessionJSON !== null
+    ? JSON.parse(sessionJSON)
+    : {
+        host: false,
+        local: false,
+        isMobile: false,
+        sessionId: "",
+        player: players.one,
+        inSession: false,
+        mobileCode: { player1: "", player2: "" },
+        mobileConnected: { player1: false, player2: false },
+        readyStatus: { player1: false, player2: false },
+      };
 interface SessionInfo {
   sessionId: string;
   mobileCodes: PlayerOptions<string>;
@@ -39,9 +41,12 @@ export const menuSlice = createSlice({
       { payload: { sessionId, mobileCodes } }: PayloadAction<SessionInfo>
     ) {
       state.host = true;
+
       state.inSession = true;
       state.sessionId = sessionId;
       state.mobileCode = mobileCodes;
+      sessionStorage.setItem(sessionId, "host");
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
 
     joinSession(
@@ -52,11 +57,10 @@ export const menuSlice = createSlice({
       state.sessionId = sessionId.substring(0, 4);
       state.inSession = true;
       state.mobileCode = mobileCodes;
+      sessionStorage.setItem(sessionId, "guest");
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
     leaveSession(state) {
-      state.readyStatus = state.host
-        ? { player1: false, player2: false }
-        : { ...state.readyStatus, player2: false };
       state.host = false;
       state.local = false;
       state.isMobile = false;
@@ -65,14 +69,19 @@ export const menuSlice = createSlice({
       state.inSession = false;
       state.mobileCode = { player1: "", player2: "" };
       state.mobileConnected = { player1: false, player2: false };
+      state.readyStatus = { player1: false, player2: false };
+      sessionStorage.clear();
     },
 
     setLocal(state) {
       state.local = !state.local;
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
     isController(state, action: PayloadAction<PlayerChoices>) {
       state.isMobile = true;
       state.player = action.payload;
+      sessionStorage.setItem(state.sessionId, state.player);
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
     updateMobileConnection(
       state,
@@ -83,9 +92,16 @@ export const menuSlice = createSlice({
     ) {
       state.mobileConnected[`${action.payload.player}`] =
         action.payload.mobileConnected;
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
     toggleReady(state, action: PayloadAction<PlayerChoices>) {
       state.readyStatus[action.payload] = !state.readyStatus[action.payload];
+      sessionStorage.setItem("session", JSON.stringify(state));
+    },
+    playerDisconnect(state, action: PayloadAction<PlayerChoices>) {
+      state.mobileConnected[`${action.payload}`] = false;
+      state.readyStatus[action.payload] = false;
+      sessionStorage.setItem("session", JSON.stringify(state));
     },
   },
 });
@@ -99,6 +115,8 @@ export const {
   isController,
   updateMobileConnection,
   toggleReady,
+  playerDisconnect,
+  
 } = menuSlice.actions;
 
 export default menuSlice.reducer;

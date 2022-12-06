@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../redux";
 import {
+  playerDisconnect,
   toggleReady,
   updateMobileConnection,
 } from "../../../../redux/features/menu-slice";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
-import {PlayerChoices } from "../../../../util/types";
+import { PlayerChoices, players } from "../../../../util/types";
 
 import "./ChoosePlayer.css";
 
@@ -51,11 +52,15 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
         updateMobileConnection({ player: playerConnected, mobileConnected })
       );
     });
-    socket.on("PLAYER_DISCONNECTED", () => {
-      host && setGuestConnected(false);
-      dispatch(
-        updateMobileConnection({ player: "player2", mobileConnected: false })
-      );
+    host &&
+      socket.on("PLAYER_DISCONNECTED", () => {
+        console.log("Player left");
+
+        setGuestConnected(false);
+        dispatch(playerDisconnect(players.two));
+      });
+    socket.on("MOBILE_DISCONNECTED", (player) => {
+      dispatch(updateMobileConnection({ player, mobileConnected: false }));
     });
 
     isSamePlayer() &&

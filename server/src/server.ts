@@ -1,110 +1,48 @@
-import express, { Response, Request, NextFunction } from "express";
-import cors from "cors";
+import express from "express";
 import http from "http";
 import "dotenv/config";
 import { Server } from "socket.io";
-import { Socket } from "dgram";
 const app: express.Application = express();
-const { PORT } = process.env;
-
 const server = http.createServer(app);
+
+const { PORT } = process.env;
 const io = new Server(server, { cors: { origin: "*" } });
-type PlayerChoices = "player1" | "player2";
-interface Player {
-  mobile: boolean;
-  mobileCode: string;
-  socketId: string;
-  ready: boolean;
-}
-interface CheckPlayer {
-  (player: PlayerChoices): any;
-}
-interface session {
-  [key: string]: {
-    player1: Player;
-    player2: Player;
-    host: string;
-    guest: string;
-    local: boolean;
-  };
-}
-/**
- * @returns A random character ranging from A - Z
- */
-const randomChar = () => {
-  //Getting a random char from using utf-16
-  const min = 65;
-  const max = 89;
-  return String.fromCharCode(Math.floor(Math.random() * (max - min + 1) + min));
-};
-/**
- * @returns A random ID in the form of `'[A-Z][A-Z][A-Z][A-Z]'`
- */
-const randomId = () =>
-  `${randomChar()}${randomChar()}${randomChar()}${randomChar()}`;
-/**
- *
- * @param id The id to set the mobile code too
- * @returns A random code in a string `'id[1-100]'`
- */
-const createMobileCode = (id: string) =>
-  `${id}${Math.floor(Math.random() * 100)}`;
 
 /**
  * The sessions that are currently active
  */
-const sessions: session = {};
-/**
- * If the id is already taken,it wil generate a new one
- * @returns A random id consisting of 4 upper cased letters
- */
-const checkIdIsNotTaken = (): string => {
-  const generatedId = randomId();
-  return !sessions[generatedId] ? generatedId : checkIdIsNotTaken();
-};
+const sessions: Sessions = {};
+
 io.on("connection", (socket) => {
   /**
-   * Check for empty sessions every 10 seconds
+   * Rejoining the room after refreshing the page
    */
-  setInterval(() => {
-    for (const [id, details] of Object.entries(sessions)) {
-      // If the session has no host then disconnect connected players
-      if (!io.sockets.adapter.rooms.get(id)?.has(details.host)) {
-        console.log(`${id} room Host Disconnected`);
-        //If the session still has players after the host ledt notify them and kick them out
-        if (io.sockets.adapter.rooms.get(id)) {
-          socket.to(id).emit("HOST_DISCONNECTED", () => {
-            io.socketsLeave(id); // kicks all sockets connected to the room out of the server after they ack the notification
-            console.log("notified clients");
-          });
-          io.emit("UPDATE_SERVERLIST", { id, connectedPlayers: 0 }, true, true); // deletes the session from the clients server list
-          console.log("\n");
-        }
-
-        delete sessions[id];
-      }
+  socket.on("RE_JOIN", (id, role: Role) => {
+    if (sessions[id]) {
+      role === "guest" || role === "host"
+        ? (sessions[id][role].socketId = socket.id)
+        : (sessions[id][role].mobile.socketId = socket.id);
+      socket.join(id);
     }
-  }, 10_000);
-
+  });
   /**
    *Listens for new sessions
    */
   socket.on("CREATE_SESSION", (sendIdsBack) => {
-    const generatedId = checkIdIsNotTaken(); //The generated id
+    const generatedId = checkIdIsNotTaken(sessions); //The generated id
 
     //Creates a empty player object for the session object
     const player = (): Player => ({
-      mobile: false,
+      mobile: { connected: false, socketId: "" },
       mobileCode: createMobileCode(generatedId),
-      socketId: "",
       ready: false,
     });
     //Generates an initial session object
     sessions[generatedId] = {
       player1: player(),
       player2: player(),
-      host: socket.id,
-      guest: "",
+      host: { connected: true, socketId: socket.id },
+      guest: { connected: false, socketId: "" },
       local: false,
     };
     //The mobile codes to send back to the client
@@ -156,15 +94,16 @@ io.on("connection", (socket) => {
       const joinMobile: CheckPlayer = (player) => {
         //If the mobile code is the same as the one sent connect the client to that session
         if (session[player].mobileCode === id) {
-          sessions[sessionID][player].mobile = true;
-          sessions[sessionID][player].socketId = socket.id;
+          sessions[sessionID][player].mobile.connected = true;
+          sessions[sessionID][player].mobile.socketId = socket.id;
           socket.emit("CONNECT_MOBILE", player); // tells the client to send the user to the controller page
           socket.to(sessionID).emit("PLAYER_CONNECTED", player, true); //Tells other player that the phone connected
         }
       };
       // if a player is just joining as a second playe and not controller tell the users to update the server with a connected player
       if (id.length === 4) {
-        sessions[sessionID].guest = socket.id;
+        sessions[sessionID].guest.connected = true;
+        sessions[sessionID].guest.socketId = socket.id;
         socket.broadcast.emit(
           "UPDATE_SERVERLIST",
           { id: sessionID, connectedPlayers: 2 },
@@ -177,15 +116,16 @@ io.on("connection", (socket) => {
        * Checks if the connected players have already selected a device and send it back to the client
        */
 
-      session.player1.mobile &&
+      session.player1.mobile.connected &&
         socket.emit("PLAYER_CONNECTED", "player1", true);
+      session.player1.ready && socket.emit("PLAYER_READY_UP", "player1");
 
       joinMobile("player1");
       joinMobile("player2");
 
       socket.join(sessionID);
 
-      io.to(session.host).emit("PLAYER_CONNECTED", "player2", false);
+      socket.to(sessionID).emit("PLAYER_CONNECTED", "player2", false);
       console.log(` joined session ${sessionID}`, session);
       console.log(io.sockets.adapter.rooms.get(sessionID), "\n");
     }
@@ -193,44 +133,52 @@ io.on("connection", (socket) => {
   /**
    * Listens for when a user leaves a session
    */
-  socket.on("LEAVE_SESSION", (id: string) => {
-    socket.leave(id);
-    //If the session is already present
-    if (sessions[id]) {
-      const noHost = socket.id === sessions[id].host;
-      /**
-       * If the host left the room, tell connected clients to leave the socket room and update the server list to delete the session
-       */
-      if (noHost) {
-        socket.broadcast.emit(
-          "UPDATE_SERVERLIST",
-          { id, connectedPlayers: 0 },
-          true, // if the session is already on the server list client side
-          true // if the session is being deleted
-        );
-        socket.to(id).emit("HOST_DISCONNECTED", () => {
-          io.socketsLeave(id);
-          delete sessions[id];
-        });
-        /**
-         * If a other player left and it is the guest update the session info and notify the server list
-         */
-      } else if (socket.id === sessions[id].guest) {
-        sessions[id].guest = "";
-        sessions[id].player2.mobile = false;
-        socket.to(id).emit("PLAYER_DISCONNECTED");
-        socket.broadcast.emit(
-          "UPDATE_SERVERLIST",
-          { id, connectedPlayers: 1 },
-          true, // if the session is already on the server list client side
-          false // if the session is being deleted
-        );
-      }
+  socket.on(
+    "LEAVE_SESSION",
+    (id: string, role: "host" | "guest" | PlayerChoices) => {
+      socket.leave(id);
+      console.log(role);
 
-      console.log(`${socket.id} left room ${id}`);
-      console.log(`${noHost ? "deleted" : "left"} room ${id} \n`);
+      //If the session is already present
+      if (sessions[id]) {
+        /**
+         * If the host left the room, tell connected clients to leave the socket room and update the server list to delete the session
+         */
+        if (role === "host") {
+          socket.broadcast.emit(
+            "UPDATE_SERVERLIST",
+            { id, connectedPlayers: 0 },
+            true, // if the session is already on the server list client side
+            true // if the session is being deleted
+          );
+          socket.to(id).emit("HOST_DISCONNECTED", () => {
+            io.socketsLeave(id);
+            delete sessions[id];
+          });
+          /**
+           * If a other player left and it is the guest update the session info and notify the server list
+           */
+        } else if (role === "guest") {
+          sessions[id].guest.connected = false;
+          sessions[id].player2.mobile.connected = false;
+          sessions[id].player2.ready = false;
+          socket.to(sessions[id].host.socketId).emit("PLAYER_DISCONNECTED");
+          socket.broadcast.emit(
+            "UPDATE_SERVERLIST",
+            { id, connectedPlayers: 1 },
+            true, // if the session is already on the server list client side
+            false // if the session is being deleted
+          );
+        } else if (role === "player1" || role === "player2") {
+          sessions[id][role].mobile.connected = false;
+          socket.to(id).emit("MOBILE_DISCONNECTED", role);
+        }
+
+        console.log(`${role} left room ${id}`);
+        console.log(`${role === "host" ? "deleted" : "left"} room ${id} \n`);
+      }
     }
-  });
+  );
 
   /**
    * Listens for events on updating the session, if it is local or not
@@ -240,7 +188,13 @@ io.on("connection", (socket) => {
     console.log("Changed local setting to ", sessions[id].local, "\n");
     // disconnects any guest from the session if the host sets the session to local
     if (sessions[id].local && sessions[id].guest) {
-      socket.to(sessions[id].guest).emit("HOST_DISCONNECTED");
+      socket
+        .to(sessions[id].guest.socketId)
+        .to(sessions[id].player2.mobile.socketId)
+        .emit("HOST_DISCONNECTED");
+      sessions[id].player2.mobile.connected = false;
+      sessions[id].guest.connected = false;
+      sessions[id].player2.ready = false;
     }
     /**
      * If local delete session from the server list
@@ -266,7 +220,6 @@ io.on("connection", (socket) => {
     sessions[id][player].ready = !sessions[id][player].ready;
     socket.to(id).emit("PLAYER_READY_UP", player);
     console.log(` Session ${id} player Ready ${player}\n`);
-    
   });
   /**
    * Listens for when a host starts the game and wants to let the guest know
@@ -291,7 +244,7 @@ io.on("connection", (socket) => {
   socket.on("GET_SERVERS", (returnServers) => {
     const servers = [];
     for (const [id, details] of Object.entries(sessions)) {
-      let connectedPlayers: number = details.guest ? 2 : 1;
+      let connectedPlayers: number = details.guest.connected ? 2 : 1;
 
       servers.push({ id, connectedPlayers });
     }
@@ -302,25 +255,62 @@ io.on("connection", (socket) => {
 server.listen(PORT, () => {
   console.log(`Socket Server listening on http://localhost:${PORT}`);
 });
-// express.json();
-// app.use(cors())
-// app.use(async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     console.log({ method: req.method }, { url: req.url });
-//     next();
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+type PlayerChoices = "player1" | "player2";
+type Role = "host" | "guest" | PlayerChoices;
+/**
+ * Interface for the Player object for session info
+ */
+interface Player {
+  mobile: Connected;
+  mobileCode: string;
+  ready: boolean;
+}
+/**
+ * Function interface to check the info for a player
+ */
+interface CheckPlayer {
+  (player: PlayerChoices): any;
+}
 
-// app.use((req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     res.status(404).json({ message: "Page Not Found" });
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-//   console.error(err.stack);
-//   res.status(500).json({ message: "Internal Server Error" });
-// })
+/**
+ * The object carrying the info for each session
+ */
+interface Sessions {
+  [key: string]: {
+    player1: Player;
+    player2: Player;
+    host: Connected;
+    guest: Connected;
+    local: boolean;
+  };
+}
+interface Connected {
+  connected: boolean;
+  socketId: string;
+}
+const randomChar = () => {
+  //Getting a random char from using utf-16
+  const min = 65;
+  const max = 89;
+  return String.fromCharCode(Math.floor(Math.random() * (max - min + 1) + min));
+};
+/**
+ * @returns A random ID in the form of `'[A-Z][A-Z][A-Z][A-Z]'`
+ */
+const randomId = () =>
+  `${randomChar()}${randomChar()}${randomChar()}${randomChar()}`;
+/**
+ *
+ * @param id The id to set the mobile code too
+ * @returns A random code in a string `'id[1-100]'`
+ */
+const createMobileCode = (id: string) =>
+  `${id}${Math.floor(Math.random() * 100)}`;
+/**
+ * If the id is already taken,it wil generate a new one
+ * @returns A random id consisting of 4 upper cased letters
+ */
+const checkIdIsNotTaken = (sessions: Sessions): string => {
+  const generatedId = randomId();
+  return !sessions[generatedId] ? generatedId : checkIdIsNotTaken(sessions);
+};
