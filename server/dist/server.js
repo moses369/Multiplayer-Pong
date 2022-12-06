@@ -211,10 +211,6 @@ io.on("connection", (socket) => {
         sessions[id][player].ready = !sessions[id][player].ready;
         socket.to(id).emit("PLAYER_READY_UP", player);
         console.log(` Session ${id} player Ready ${player}\n`);
-        if (sessions[id].player1.ready && sessions[id].player2.ready) {
-            socket.to(id).emit("READY_TO_START");
-            console.log('Session Ready to start', id, '\n');
-        }
     });
     /**
      * Listens for when a host starts the game and wants to let the guest know

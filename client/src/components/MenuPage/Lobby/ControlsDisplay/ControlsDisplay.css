@@ -1,0 +1,50 @@
+.controlButton{
+    width: fit-content;
+    align-self: center;
+    display: none ; 
+}
+.controlTitle{
+    font-size: var(--lg-font);
+    margin: .25em 0;
+    text-align: center;
+  }
+  .controlTextContainer{
+    margin-bottom: .75em;
+  }
+  .controlTextContainer > span{
+    margin-bottom: .5em;
+  }
+  .controlHeader{
+    font-size: var(--lg-font);
+    margin-bottom: .3em;
+  }
+  .controlSubHeader{
+    font-size: var(--md-font);
+    margin-bottom: .1em;
+  }
+  .controlModal{
+    display: flex;
+    flex-direction: column;
+
+  justify-content: center;
+  background: var(--primary-background);
+  padding: 1rem;
+  z-index: 10;
+  }
+@media (max-width:1000px) {
+    .controlTitle{
+        display: none;
+    }
+    .controlButton{
+        display: block;
+    }
+    .inLobby{
+        display: none;
+    }
+
+  }
+  @media (max-width:550px) {
+    .playerControl .row{
+        flex-direction: column;
+    }
+  }

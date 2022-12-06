@@ -1,5 +1,7 @@
+
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
+
 import {
   setLocal,
   updateMobileConnection,
@@ -7,7 +9,7 @@ import {
 
 import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
-
+import ControlsDisplay, { SlideControls } from './ControlsDisplay/ControlsDisplay'
 import "./Lobby.css";
 
 interface Lobby {
@@ -25,7 +27,7 @@ const Lobby = ({ leave }: Lobby) => {
   );
 
   return (
-    <div className={`${!host && 'guest'} lobyyContainer neonBorder`}>
+    <div className={`${!host && "guest"} lobyyContainer neonBorder`}>
       <div className="row lobbyNav">
         <button
           className="neonButton neonText neonBorder"
@@ -59,15 +61,16 @@ const Lobby = ({ leave }: Lobby) => {
         )}
       </div>
       {host && <SessionID className="mobileID" />}
+      <ControlsDisplay />
       <div>
-        <h3 className="controlTitle">Controls</h3>
         <div className="row lobbyPlayer">
           {" "}
           <ChoosePlayer playerNum={1} />
+          <SlideControls/>
           <ChoosePlayer playerNum={2} />
         </div>
       </div>
-     <StartButton />
+      <StartButton />
     </div>
   );
 };
@@ -83,3 +86,6 @@ const SessionID = ({ className }: { className: string }) => {
 SessionID.defaultProps = {
   className: "",
 };
+
+
+

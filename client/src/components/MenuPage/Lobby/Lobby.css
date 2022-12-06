@@ -23,11 +23,7 @@
 .changeSatusBtn{
     width: 5.5em;
 }
-.controlTitle{
-    font-size: var(--lg-font);
-    margin: .25em 0;
-    text-align: center;
-  }
+
   .mobileID{
     display: none;
 
@@ -36,6 +32,8 @@
     font-size: var(--lg-font);
 }
 
+ 
+  
   @media (max-width:850px) {
     .mobileID{
         display: inline-block;
@@ -44,4 +42,7 @@
     .pcID{
         display: none;
     }
+
   }
+
+  

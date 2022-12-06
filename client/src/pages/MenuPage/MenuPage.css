@@ -46,7 +46,7 @@ display: none;
   justify-content: center;
   background: var(--primary-background);
 }
-.rulesModalOverlay{
+.modalOverlay{
   position: absolute;
   top: 0;
   bottom: 0;

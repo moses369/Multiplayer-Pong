@@ -10,6 +10,7 @@ const Rules = ({inModal}:{inModal?:boolean}) => {
           If you want to connect a mobile controller, enter its code instead
         </li>
         <li>Games are first to 11 points</li>
+       
         <li>As time goes on the pong will move faster</li>
         <li>
           If your playing on a mobile device, please play on landscape for the

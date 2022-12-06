@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ReactModal from "react-modal";
 import { RootState } from "../../redux";
 import { leaveSession, isController } from "../../redux/features/menu-slice";
-
-import MenuNav from "../../components/MenuPage/MainMenu/MenuNav/MenuNav";
-import Lobby from "../../components/MenuPage/Lobby/Lobby";
-
-import "./MenuPage.css";
 import { PlayerChoices } from "../../util/types";
+
+import Lobby from "../../components/MenuPage/Lobby/Lobby";
+import MenuNav from "../../components/MenuPage/MainMenu/MenuNav/MenuNav";
 import ServerSelect from "../../components/MenuPage/MainMenu/ServerSelect/ServerSelect";
 import Rules from "../../components/MenuPage/MainMenu/Rules/Rules";
-import ReactModal from "react-modal";
 
+import "./MenuPage.css";
 const MenuPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -80,7 +79,7 @@ const MenuPage = () => {
           <ReactModal
           onRequestClose={toggleModal}
             className={"rulesModal neonBorder centerAbs neonText"}
-            overlayClassName={`rulesModalOverlay`}
+            overlayClassName={`modalOverlay`}
             isOpen={showRules}
             children={<Rules inModal />}
           />

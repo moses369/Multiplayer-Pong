@@ -6,8 +6,9 @@ import {
   updateMobileConnection,
 } from "../../../../redux/features/menu-slice";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import {PlayerChoices } from "../../../../util/types";
+
 import "./ChoosePlayer.css";
-import { players, devices, PlayerChoices } from "../../../../util/types";
 
 interface ChoosePlayerProps {
   playerNum: 1 | 2;
