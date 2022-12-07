@@ -12,8 +12,60 @@ const io = new Server(server, { cors: { origin: "*" } });
  * The sessions that are currently active
  */
 const sessions: Sessions = {};
-
+const connections = new Map<string, string>();
+const newConnection = (id: string, role: Role) => `${id}${role}`;
 io.on("connection", (socket) => {
+  socket.on("disconnect", () => {
+    const details = connections.get(socket.id);
+    if (details) {
+      const sessionID = details.substring(0, 4);
+      const role = details.substring(4);
+
+      if (sessions[sessionID]) {
+        const session = sessions[sessionID];
+
+        setTimeout(() => {
+          const sessionDetail =
+            role === "guest" || role === "host"
+              ? session[role]
+              : role === "player1" || role === "player2"
+              ? session[role].mobile
+              : null;
+          if (sessionDetail?.socketId === socket.id) {
+            console.log("They is gone", sessionID, role);
+            sessionDetail.connected = false;
+            if (role === "host") {
+              io.emit(
+                "UPDATE_SERVERLIST",
+                { sessionID, connectedPlayers: 0 },
+                true, // if the session is already on the server list client side
+                true // if the session is being deleted
+              );
+              io.to(sessionID).emit("HOST_DISCONNECTED", () => {
+                io.socketsLeave(sessionID);
+                delete sessions[sessionID];
+              });
+            } else if (role === "guest") {
+              session.guest.connected = false;
+              session.player2.mobile.connected = false;
+              session.player2.ready = false;
+              socket.to(session.host.socketId).emit("PLAYER_DISCONNECTED");
+              socket.broadcast.emit(
+                "UPDATE_SERVERLIST",
+                { sessionID, connectedPlayers: 1 },
+                true, // if the session is already on the server list client side
+                false // if the session is being deleted
+              );
+            } else if (role === "player1" || role === "player2") {
+              session[role].mobile.connected = false;
+              socket.to(sessionID).emit("MOBILE_DISCONNECTED", role);
+            }
+          }
+        }, 3_000);
+      }
+    }
+    console.log();
+  });
   /**
    * Rejoining the room after refreshing the page
    */
@@ -22,6 +74,8 @@ io.on("connection", (socket) => {
       role === "guest" || role === "host"
         ? (sessions[id][role].socketId = socket.id)
         : (sessions[id][role].mobile.socketId = socket.id);
+      connections.set(socket.id, newConnection(id, role));
+
       socket.join(id);
     }
   });
@@ -45,6 +99,7 @@ io.on("connection", (socket) => {
       guest: { connected: false, socketId: "" },
       local: false,
     };
+    connections.set(socket.id, newConnection(generatedId, "host"));
     //The mobile codes to send back to the client
     const mobileCode = {
       player1: sessions[generatedId].player1.mobileCode,
@@ -75,7 +130,7 @@ io.on("connection", (socket) => {
      */
     callback(
       session
-        ? !session?.local || (session.local && id.length > 4)
+        ? !session?.local || (session?.local && id.length > 4)
           ? true
           : false
         : false,
@@ -87,7 +142,7 @@ io.on("connection", (socket) => {
     /**
      * Runs if the session is real, or if its local and its a controller joining
      */
-    if (session || (sessions[sessionID].local && id.length > 4)) {
+    if (session || (sessions[sessionID]?.local && id.length > 4)) {
       /**
        * Used to join mobile phone controllers to the server
        */
@@ -96,6 +151,8 @@ io.on("connection", (socket) => {
         if (session[player].mobileCode === id) {
           sessions[sessionID][player].mobile.connected = true;
           sessions[sessionID][player].mobile.socketId = socket.id;
+          connections.set(socket.id, newConnection(sessionID, player));
+
           socket.emit("CONNECT_MOBILE", player); // tells the client to send the user to the controller page
           socket.to(sessionID).emit("PLAYER_CONNECTED", player, true); //Tells other player that the phone connected
         }
@@ -104,6 +161,7 @@ io.on("connection", (socket) => {
       if (id.length === 4) {
         sessions[sessionID].guest.connected = true;
         sessions[sessionID].guest.socketId = socket.id;
+        connections.set(socket.id, newConnection(sessionID, "guest"));
         socket.broadcast.emit(
           "UPDATE_SERVERLIST",
           { id: sessionID, connectedPlayers: 2 },
@@ -141,6 +199,8 @@ io.on("connection", (socket) => {
 
       //If the session is already present
       if (sessions[id]) {
+        connections.delete(socket.id);
+
         /**
          * If the host left the room, tell connected clients to leave the socket room and update the server list to delete the session
          */

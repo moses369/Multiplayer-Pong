@@ -7,7 +7,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { leaveSession } from "../redux/features/menu-slice";
 import { deleteServer } from "../redux/features/serverList-slice";
 
-const useHostDC = (setShowHostDC:React.Dispatch<React.SetStateAction<boolean>>) => {
+const useHostDC = (
+  setShowHostDC: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,21 +37,18 @@ const useHostDC = (setShowHostDC:React.Dispatch<React.SetStateAction<boolean>>) 
    * If the host discontted reset the session info and delete it from the users server list
    */
   useEffect(() => {
+    const role = sessionStorage.getItem(sessionId);
     socket.on("HOST_DISCONNECTED", () => {
       console.log("host disconected");
-      socket.emit(
-        "LEAVE_SESSION",
-        sessionId,
-        sessionStorage.getItem(sessionId)
-      );
+      socket.emit("LEAVE_SESSION", sessionId, role);
       location.pathname !== "/" && navigate("/");
-      
+
       dispatch(deleteServer(sessionId));
       dispatch(leaveSession());
-      setShowHostDC(true)
+      setShowHostDC(true);
     });
-    return () => {
-      socket.removeListener("HOST_DISCONNECTED");
+      return () => {
+        socket.removeListener("HOST_DISCONNECTED");
     };
   }, [sessionId]);
 };
