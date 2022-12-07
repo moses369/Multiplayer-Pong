@@ -12,37 +12,16 @@ import ServerSelect from "../../components/MenuPage/MainMenu/ServerSelect/Server
 import Rules from "../../components/MenuPage/MainMenu/Rules/Rules";
 
 import "./MenuPage.css";
+import useLeaveSession from "../../customHook/useLeaveSession";
 const MenuPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { host, sessionId, socket, inSession, local } = useSelector(
-    ({
-      menu: { host, sessionId, inSession, local },
-      socket: { socket },
-    }: RootState) => ({
-      host,
-      sessionId,
-      socket,
-      inSession,
-      local,
-    })
-  );
+  const { socket, inSession } = useSelector((state: RootState) => ({
+    socket: state.socket.socket,
+    inSession: state.menu.inSession,
+  }));
   const [showRules, setShowRules] = useState(false);
-  /**
-   * Used to leave the session
-   */
-  const leave = useCallback(() => {
-    if (sessionId) {
-      console.log("left");
-
-      socket.emit(
-        "LEAVE_SESSION",
-        sessionId,
-        sessionStorage.getItem(sessionId)
-      );
-      dispatch(leaveSession());
-    }
-  }, [sessionId]);
+  const leave = useLeaveSession();
   /**
    * If the player is not in a session leave the lobby and reset the session info
    */
@@ -58,7 +37,7 @@ const MenuPage = () => {
 
       navigate("/controller");
     });
-  
+
     return () => {
       socket.removeListener("CONNECT_MOBILE");
     };
@@ -96,7 +75,7 @@ const MenuPage = () => {
         </>
       ) : (
         <>
-          <Lobby leave={leave} />
+          <Lobby />
         </>
       )}
     </div>

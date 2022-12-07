@@ -61,6 +61,7 @@ io.on("connection", (socket) => {
               socket.to(sessionID).emit("MOBILE_DISCONNECTED", role);
             }
           }
+          connections.delete(socket.id);
         }, 3_000);
       }
     }
@@ -75,7 +76,10 @@ io.on("connection", (socket) => {
         ? (sessions[id][role].socketId = socket.id)
         : (sessions[id][role].mobile.socketId = socket.id);
       connections.set(socket.id, newConnection(id, role));
-
+      if (role === "guest")
+        socket.to(id).emit("PLAYER_CONNECTED", "player2", false);
+      if (role === "player2" || role === "player1")
+        socket.to(id).emit("PLAYER_CONNECTED", role, true);
       socket.join(id);
     }
   });
@@ -247,7 +251,7 @@ io.on("connection", (socket) => {
     sessions[id].local = !sessions[id].local;
     console.log("Changed local setting to ", sessions[id].local, "\n");
     // disconnects any guest from the session if the host sets the session to local
-    if (sessions[id].local && sessions[id].guest) {
+    if (sessions[id].local && sessions[id].guest.connected) {
       socket
         .to(sessions[id].guest.socketId)
         .to(sessions[id].player2.mobile.socketId)
@@ -256,6 +260,7 @@ io.on("connection", (socket) => {
       sessions[id].guest.connected = false;
       sessions[id].player2.ready = false;
     }
+    sessions[id].player1.ready = false;
     /**
      * If local delete session from the server list
      * else add it back to the session list
@@ -304,17 +309,31 @@ io.on("connection", (socket) => {
   socket.on("GET_SERVERS", (returnServers) => {
     const servers = [];
     for (const [id, details] of Object.entries(sessions)) {
+      if (details.local) continue;
       let connectedPlayers: number = details.guest.connected ? 2 : 1;
 
       servers.push({ id, connectedPlayers });
     }
     returnServers(servers);
   });
+socket.on('PLAY_AGAIN',(id,player) => {
+  console.log('Play again they say',id,player);
+  
+  socket.to(id).emit('ON_PLAY_AGAIN',player)
+})
+  socket.on("BACK_TO_LOBBY", (id) => {
+    console.log("GO BACK TO LOBBY", id);
+
+    sessions[id].player1.ready = false;
+    sessions[id].player2.ready = false;
+    socket.to(id).emit("GO_TO_LOBBY");
+  });
 });
 
 server.listen(PORT, () => {
   console.log(`Socket Server listening on http://localhost:${PORT}`);
 });
+
 type PlayerChoices = "player1" | "player2";
 type Role = "host" | "guest" | PlayerChoices;
 /**

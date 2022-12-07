@@ -75,6 +75,8 @@ export const menuSlice = createSlice({
 
     setLocal(state) {
       state.local = !state.local;
+      state.readyStatus = { player1: false, player2: false };
+
       sessionStorage.setItem("session", JSON.stringify(state));
     },
     isController(state, action: PayloadAction<PlayerChoices>) {

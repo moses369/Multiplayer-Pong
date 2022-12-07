@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
 
 import {
+  playerDisconnect,
   setLocal,
   updateMobileConnection,
 } from "../../../redux/features/menu-slice";
@@ -11,12 +12,12 @@ import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
 import ControlsDisplay, { SlideControls } from './ControlsDisplay/ControlsDisplay'
 import "./Lobby.css";
-import { updateServer } from "../../../redux/features/serverList-slice";
+import useLeaveSession from "../../../customHook/useLeaveSession";
+import { players } from "../../../util/types";
 
-interface Lobby {
-  leave: () => void;
-}
-const Lobby = ({ leave }: Lobby) => {
+
+
+const Lobby = () => {
   const dispatch = useDispatch();
   const { host, sessionId, socket, local } = useSelector(
     (state: RootState) => ({
@@ -26,7 +27,7 @@ const Lobby = ({ leave }: Lobby) => {
       local: state.menu.local,
     })
   );
-
+const leave = useLeaveSession()
   return (
     <div className={`${!host && "guest"} lobyyContainer neonBorder`}>
       <div className="row lobbyNav">
@@ -51,7 +52,8 @@ const Lobby = ({ leave }: Lobby) => {
                     player: "player2",
                     mobileConnected: false,
                   })
-                );
+                  );
+               
               }}
             >
               {local ? "Local" : "Online"}

@@ -16,7 +16,6 @@ const useMouseControls = () => {
     if (clientY > -0.47 && clientY < 0.47) {
      clientY !== ylocation.current && emitMove(clientY, true, false);
       ylocation.current = clientY;
-      console.log(clientY);
     } else {
       emitMove(clientY, false, false);
     }

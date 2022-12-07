@@ -121,8 +121,9 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
           className={`neonButton neonBorder neonText readyUp ${
             ready && "ready"
           }`}
-          onClick={() => {
+          onClick={(e) => {
             if (isSamePlayer()) {
+              e.currentTarget.blur()
               dispatch(toggleReady(`player${playerNum}`));
               socket.emit("PLAYER_READY", sessionId, player);
             }

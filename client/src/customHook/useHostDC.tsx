@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import { leaveSession } from "../redux/features/menu-slice";
 import { deleteServer } from "../redux/features/serverList-slice";
+import { resetGame } from "../redux/features/game-slice";
 
 const useHostDC = (
   setShowHostDC: React.Dispatch<React.SetStateAction<boolean>>
@@ -29,9 +30,7 @@ const useHostDC = (
   };
   useEffect(() => {
     goHomeIfNotinSesison();
-    return () => {
-      goHomeIfNotinSesison();
-    };
+
   }, [inSession]);
   /**
    * If the host discontted reset the session info and delete it from the users server list
@@ -45,6 +44,7 @@ const useHostDC = (
 
       dispatch(deleteServer(sessionId));
       dispatch(leaveSession());
+      dispatch(resetGame())
       setShowHostDC(true);
     });
       return () => {

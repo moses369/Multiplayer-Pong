@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux";
 import { PlayerChoices, players } from "../../../util/types";
-
+import ReactModal from "react-modal";
 import Pong from "../Pong/Pong";
 import Paddle from "../Padddle/Paddle";
-
+import GameOver from "../GameOver/GameOver";
 import "./GameDisplay.css";
 
 const GameDisplay = () => {
@@ -30,10 +30,11 @@ const GameDisplay = () => {
     }, time);
   };
   
+  
 
   return (
     <>
-
+  <GameOver/>
         <div className="scoreContainer">
           <ScoreIndicator player={players.one} />
           <ScoreIndicator player={players.two} />
@@ -63,5 +64,6 @@ interface ScoreIndicatorProps {
  */
 const ScoreIndicator = ({ player }: ScoreIndicatorProps) => {
   const score = useSelector((state: RootState) => state.game.score);
+  
   return <h1 className="neonText score">{score[player]}</h1>;
 };

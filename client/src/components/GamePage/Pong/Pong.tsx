@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deflate } from "zlib";
 import { RootState } from "../../../redux";
 import { incrementScore } from "../../../redux/features/game-slice";
 import { PlayerChoices, players } from "../../../util/types";
@@ -22,6 +21,9 @@ const delta = {
 };
 const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const dispatch = useDispatch();
+  const { winner } = useSelector((state: RootState) => ({
+    winner: state.game.winner,
+  }));
   const [playAnimation, setPlayAnimation] = useState<boolean>(true); //Determines to play the animation or not
   const [scored, setScored] = useState<PlayerChoices | "">(""); //Dictates which player scored
   const pongRef = useRef<HTMLDivElement>(null);
@@ -37,7 +39,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     up: boolean;
     paddleBounced: boolean;
   }>({
-    left: true,
+    left: false, //your initial directions
     up: false,
     paddleBounced: false, //Determines if we already collided with the paddle to not register multiple collides on one collision
   }); //The booleans to determine if we reverse directions
@@ -77,7 +79,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         /**
          *  add to horizontal sides for speed indescrepencies
          * */
-     
+
         const buffer = offsetRef.current.delta < 1.7 ? 7 : 9;
         const buffedPaddle = {
           left: directionRef.current.left
@@ -119,7 +121,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleRect =
           rects.paddles[directionRef.current.left ? "left" : "right"];
         const pongRect = rects.pong;
-        const pongHeightThird = pongRect.height / 5 ;
+        const pongHeightThird = pongRect.height / 5;
         const paddleHeight = {
           eigth: paddleRect.height / 8,
           half: paddleRect.height / 2,
@@ -130,8 +132,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleSection = {
           topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
           topMid: paddleRect.top + paddleHeight.half - pongHeightThird,
-          bottomMid:
-            paddleRect.bottom - paddleHeight.half + pongHeightThird,
+          bottomMid: paddleRect.bottom - paddleHeight.half + pongHeightThird,
           bottomCorner: paddleRect.bottom - paddleHeight.eigth * 2, // 2/8 of bottom of paddle 6/8
         };
         const paddleBounced = {
@@ -249,12 +250,16 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const intervalID = useRef<NodeJS.Timer>();
 
   useEffect(() => {
-    intervalID.current = incrSpeed();
-    offsetRef.current.delta >= delta.max && clearInterval(intervalID.current);
+    if (!winner) {
+      intervalID.current = incrSpeed();
+      offsetRef.current.delta >= delta.max && clearInterval(intervalID.current);
+    } else {
+      clearInterval(intervalID.current);
+    }
     return () => {
       clearInterval(intervalID.current);
     };
-  }, []);
+  }, [winner]);
   /**
    * On whenever the a player scores update their score
    */
@@ -269,10 +274,13 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     if (playAnimation) {
       animateRef.current = requestAnimationFrame(animate);
     } else {
-      resetRound();
+      !winner && resetRound();
       cancelAnimationFrame(animateRef.current);
     }
-  }, [playAnimation]);
+    if (winner) {
+      setPlayAnimation(false);
+    }
+  }, [playAnimation, winner]);
 
   return <div className="pong neonBorder" ref={pongRef}></div>;
 };

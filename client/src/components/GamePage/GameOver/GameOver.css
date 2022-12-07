@@ -1,0 +1,39 @@
+.gameOverModal{
+    display: flex;
+    flex-direction: column;
+
+  justify-content: center;
+  background: var(--primary-background);
+  padding: 1rem;
+  z-index: 10;
+}
+.gameOverModal > h2{
+    font-size: var(--lg2-font);
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.playAgain:first-child{
+margin-right: 1rem;
+
+}
+.localPlay.playAgainContainer{
+    width: 100%;
+    justify-content: center;
+    margin-right: 0;
+}
+.playAgain > h3{
+    font-size: var(--lg-font);
+    margin-bottom: .5em;
+    text-align: center;
+}
+.neonButton.playAgainButton,
+.row.exitButtonsContainer button {
+    font-size: var(--sm-font);
+    align-content: center;
+}
+.row.exitButtonsContainer{
+    margin-top: 1.5rem;
+    justify-content: space-around;
+}
+

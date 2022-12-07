@@ -9,11 +9,11 @@ import "./Paddle.css";
 interface PaddleProps {
   player: PlayerChoices;
   paddleRef: React.RefObject<HTMLDivElement>;
-
 }
 const Paddle = ({ player, paddleRef }: PaddleProps) => {
-  const { socket } = useSelector(({ socket: { socket } }: RootState) => ({
-    socket,
+  const { socket, winner } = useSelector((state: RootState) => ({
+    socket: state.socket.socket,
+    winner: state.game.winner,
   }));
   const [playAnimation, setPlayAnimation] = useState<boolean>(false); //used to decide to start,or stop the paddle animation
   const directionRef = useRef<string | number>(""); // the direction of the movement, up / down
@@ -23,7 +23,7 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
   const holdMove = useRef<boolean>(true); // if the paddle is moved by a keyboard
   const paddle = paddleRef.current;
   useKeyControls(player, directionRef, setPlayAnimation); // used to handle the keyboard control logic
-   useMobileControls(player, holdMove,slideDelta,setPlayAnimation,paddleRef)
+  useMobileControls(player, holdMove, slideDelta, setPlayAnimation, paddleRef);
 
   /**
    * Logic for the animation for the paddle
@@ -65,12 +65,10 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
         ? moveDistance.current
         : slideDelta.current * 100;
       // Actually translating the paddles
-      (paddle.style.transform = `translateY(${yOffset}vh)`);
+      paddle.style.transform = `translateY(${yOffset}vh)`;
 
       // Have our function called again on every AnimationFrame
       animateID.current = requestAnimationFrame(animate);
-
-      
     }
   };
 
@@ -83,34 +81,39 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
     } else {
       cancelAnimationFrame(animateID.current);
     }
-  }, [playAnimation]);
+    if(winner) {
+      setPlayAnimation(false)
+    }
+  }, [playAnimation, winner]);
 
   /**
    * Listens for a direction and if we should move the paddle, from our multiplayer users
    */
   useEffect(() => {
-    socket.on(
-      "MOVING_PADDLE",
-      (
-        direction: DirectionChoices | number,
-        playerMoved: PlayerChoices,
-        move: boolean,
-        holding: boolean
-      ) => {
-        if (playerMoved === player) {
-          holding
-            ? (directionRef.current = direction)
-            : typeof direction === "number" && (slideDelta.current = direction);
+    !winner &&
+      socket.on(
+        "MOVING_PADDLE",
+        (
+          direction: DirectionChoices | number,
+          playerMoved: PlayerChoices,
+          move: boolean,
+          holding: boolean
+        ) => {
+          if (playerMoved === player) {
+            holding
+              ? (directionRef.current = direction)
+              : typeof direction === "number" &&
+                (slideDelta.current = direction);
 
-          holdMove.current = holding;
-          setPlayAnimation(move);
+            holdMove.current = holding;
+            setPlayAnimation(move);
+          }
         }
-      }
-    );
+      );
     return () => {
       socket.removeListener("MOVING_PADDLE");
     };
-  }, []);
+  }, [winner]);
 
   return (
     <div
@@ -121,6 +124,5 @@ const Paddle = ({ player, paddleRef }: PaddleProps) => {
     ></div>
   );
 };
-
 
 export default Paddle;
