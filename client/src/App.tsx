@@ -13,22 +13,24 @@ import "./App.css";
 
 function App() {
   const [showHostDC, setShowHostDC] = useState(false);
+  const [showGuestDC, setShowGuestDC] = useState(false);
   useHostDC(setShowHostDC);
   useScreenSize();
 
   const closeModal = () => {
     setShowHostDC(false);
+    setShowGuestDC(false);
   };
   return (
     <div className="App">
       <ReactModal
-        isOpen={showHostDC}
+        isOpen={showHostDC || showGuestDC }
         onRequestClose={closeModal}
         className={"neonBorder centerAbs neonText hostDCModal"}
         overlayClassName={`modalOverlay`}
         children={
           <>
-            <h2>Host Disconnected</h2>
+            <h2>{showHostDC ? 'Host' : 'Player'} Disconnected</h2>
             <button
               onClick={closeModal}
               className={`neonBorder neonText neonButton`}
@@ -41,7 +43,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<MenuPage />} />
-        <Route path="/game" element={<GamePage />} />
+        <Route path="/game" element={<GamePage setShowGuestDC={setShowGuestDC} />} />
         <Route path="/controller" element={<ControllerPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -148,10 +148,10 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
             pongRect.bottom >= paddleRect.top &&
             pongRect.bottom <= paddleSection.topCorner &&
             sideBounce,
-          mid:
-            pongRect.top >= paddleSection.topMid &&
-            pongRect.bottom <= paddleSection.bottomMid &&
-            sideBounce,
+          // mid:
+          //   pongRect.top >= paddleSection.topMid &&
+          //   pongRect.bottom <= paddleSection.bottomMid &&
+          //   sideBounce,
           bottomCorner:
             pongRect.top <= paddleRect.bottom &&
             pongRect.top >= paddleSection.bottomCorner &&
@@ -170,16 +170,16 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
             "bottomcorner",
             paddleBounced.bottomCorner
           );
-          paddleBounced.topCorner && (directionRef.current.up = true);
-          paddleBounced.bottomCorner && (directionRef.current.up = false);
+          // paddleBounced.topCorner && (directionRef.current.up = true);
+          // paddleBounced.bottomCorner && (directionRef.current.up = false);
         }
-        if (!directionRef.current.paddleBounced && paddleBounced.mid) {
-          console.log("mid");
-          offsetRef.current.horizontal = true;
-          setTimeout(() => {
-            directionRef.current.paddleBounced = false;
-          }, 200);
-        }
+        // if (!directionRef.current.paddleBounced && paddleBounced.mid) {
+        //   console.log("mid");
+        //   offsetRef.current.horizontal = true;
+        //   setTimeout(() => {
+        //     directionRef.current.paddleBounced = false;
+        //   }, 200);
+        // }
       };
 
       /**

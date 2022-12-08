@@ -33,7 +33,7 @@ const Contents = () => {
     host: state.menu.host,
   }));
   const leave = useLeaveSession();
-  const goToLobby = useBackToLobby(host);
+  const goToLobby = useBackToLobby();
   return (
     <>
       <h2>{playerText(winner)} won!</h2>

@@ -11,7 +11,11 @@ import GameDisplay from "../../components/GamePage/GameDisplay/GameDisplay";
 import "./GamePage.css";
 import { togglePlayAgain } from "../../redux/features/game-slice";
 
-const GamePage = () => {
+const GamePage = ({
+  setShowGuestDC,
+}: {
+  setShowGuestDC: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const dispatch = useDispatch();
 
   const { local, socket } = useSelector((state: RootState) => ({
@@ -20,22 +24,26 @@ const GamePage = () => {
   }));
   const goToLobby = useBackToLobby();
   useEffect(() => {
-    socket.on('ON_PLAY_AGAIN',(player:PlayerChoices) => {
-      console.log('wants to play again');
-      
-      dispatch(togglePlayAgain(player))
-    })
+    socket.on("ON_PLAY_AGAIN", (player: PlayerChoices) => {
+      console.log("wants to play again");
+
+      dispatch(togglePlayAgain(player));
+    });
     socket.on("PLAYER_DISCONNECTED", () => {
       console.log("Player left in game");
+      setShowGuestDC(true);
       goToLobby();
       dispatch(playerDisconnect(players.two));
     });
     socket.on("GO_TO_LOBBY", () => {
-      console.log('go to lobby');
-      
+      console.log("go to lobby");
+
       goToLobby();
     });
-
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      sessionStorage.clear();
+    });
     return () => {
       socket.removeListener("ON_PLAY_AGAIN");
       socket.removeListener("PLAYER_DISCONNECTED");
