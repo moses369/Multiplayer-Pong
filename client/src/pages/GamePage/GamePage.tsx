@@ -37,6 +37,8 @@ const GamePage = () => {
     });
 
     return () => {
+      socket.removeListener("ON_PLAY_AGAIN");
+      socket.removeListener("PLAYER_DISCONNECTED");
       socket.removeListener("GO_TO_LOBBY");
     };
   }, [socket]);

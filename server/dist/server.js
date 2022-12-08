@@ -260,6 +260,13 @@ io.on("connection", (socket) => {
         socket.emit("MOVING_PADDLE", direction, player, move, holding);
     });
     /**
+     * Gets inital pong position in multiplayer
+     */
+    socket.on("PONG_POSITION", (id, { top, left, up, horizontal }) => {
+        console.log(top, left, up, horizontal, "PONGGG POSSS");
+        socket.to(id).emit("SYNC_PONG", top, left, up, horizontal);
+    });
+    /**
      * Gets all the active sessions and sends them back to the client to fill their server list
      */
     socket.on("GET_SERVERS", (returnServers) => {
@@ -272,9 +279,9 @@ io.on("connection", (socket) => {
         }
         returnServers(servers);
     });
-    socket.on('PLAY_AGAIN', (id, player) => {
-        console.log('Play again they say', id, player);
-        socket.to(id).emit('ON_PLAY_AGAIN', player);
+    socket.on("PLAY_AGAIN", (id, player) => {
+        console.log("Play again they say", id, player);
+        socket.to(id).emit("ON_PLAY_AGAIN", player);
     });
     socket.on("BACK_TO_LOBBY", (id) => {
         console.log("GO BACK TO LOBBY", id);

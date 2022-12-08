@@ -1,21 +1,20 @@
-
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../redux";
 
 import {
-  playerDisconnect,
   setLocal,
   updateMobileConnection,
 } from "../../../redux/features/menu-slice";
 
 import ChoosePlayer from "./ChoosePlayer/ChoosePlayer";
 import StartButton from "./StartButton/StartButton";
-import ControlsDisplay, { SlideControls } from './ControlsDisplay/ControlsDisplay'
+import ControlsDisplay, {
+  SlideControls,
+} from "./ControlsDisplay/ControlsDisplay";
 import "./Lobby.css";
 import useLeaveSession from "../../../customHook/useLeaveSession";
-import { players } from "../../../util/types";
-
-
+import usePlayerConnectsInLobby from "../../../customHook/usePlayerConnectsInLobby";
 
 const Lobby = () => {
   const dispatch = useDispatch();
@@ -27,7 +26,10 @@ const Lobby = () => {
       local: state.menu.local,
     })
   );
-const leave = useLeaveSession()
+  const [guestConnected, setGuestConnected] = useState(false);
+
+   usePlayerConnectsInLobby(setGuestConnected);
+  const leave = useLeaveSession();
   return (
     <div className={`${!host && "guest"} lobyyContainer neonBorder`}>
       <div className="row lobbyNav">
@@ -52,8 +54,7 @@ const leave = useLeaveSession()
                     player: "player2",
                     mobileConnected: false,
                   })
-                  );
-               
+                );
               }}
             >
               {local ? "Local" : "Online"}
@@ -68,9 +69,9 @@ const leave = useLeaveSession()
       <div>
         <div className="row lobbyPlayer">
           {" "}
-          <ChoosePlayer playerNum={1} />
-          <SlideControls/>
-          <ChoosePlayer playerNum={2} />
+          <ChoosePlayer playerNum={1}  />
+          <SlideControls />
+          <ChoosePlayer playerNum={2} guestConnected={guestConnected}/>
         </div>
       </div>
       <StartButton />
@@ -89,6 +90,3 @@ const SessionID = ({ className }: { className: string }) => {
 SessionID.defaultProps = {
   className: "",
 };
-
-
-

@@ -2,7 +2,7 @@
     position: absolute;
     top: 47vh;
 
-    min-height: 6vh;
+    min-height: calc(6vh + 8px);
    
     width: .1vw;
     background-color: var(--piece-color);

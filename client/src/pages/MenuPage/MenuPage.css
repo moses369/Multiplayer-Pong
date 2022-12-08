@@ -7,8 +7,8 @@
     #081d2f,
     #0c1e2c
   );
-  min-width: 100vw;
-  height: var(--screen-size);
+  width: 100vw;
+  min-height: var(--screen-size);
   color: #78cce2;
   display: flex;
   flex-direction: column;

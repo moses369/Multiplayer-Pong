@@ -2,8 +2,7 @@
     padding: 2em;
     padding-bottom: 3.5em;
     min-width: 70vw;
-    min-height: 80%;
-    
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

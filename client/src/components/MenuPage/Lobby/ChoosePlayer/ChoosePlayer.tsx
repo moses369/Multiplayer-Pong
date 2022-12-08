@@ -13,9 +13,12 @@ import "./ChoosePlayer.css";
 
 interface ChoosePlayerProps {
   playerNum: 1 | 2;
+guestConnected?:boolean ;
+
+  
 }
 
-const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
+const ChoosePlayer = ({ playerNum,guestConnected, }: ChoosePlayerProps) => {
   const dispatch = useDispatch();
   const {
     sessionId,
@@ -36,45 +39,11 @@ const ChoosePlayer = ({ playerNum }: ChoosePlayerProps) => {
     host: state.menu.host,
     ready: state.menu.readyStatus[`player${playerNum}`],
   }));
-  const [guestConnected, setGuestConnected] = useState(false);
 
   const isSamePlayer = () => playerNum === parseInt(player[6]);
-  /**
-   * Indicates that keys are being used as the primary control
-   */
+ console.log(guestConnected);
+ 
 
-  useEffect(() => {
-    // Updates the selected devices whenever a player connects
-    socket.on("PLAYER_CONNECTED", (playerConnected, mobileConnected) => {
-      host && setGuestConnected(true);
-      console.log(playerConnected, "connected", mobileConnected);
-      dispatch(
-        updateMobileConnection({ player: playerConnected, mobileConnected })
-      );
-    });
-    host &&
-      socket.on("PLAYER_DISCONNECTED", () => {
-        console.log("Player left");
-
-        setGuestConnected(false);
-        dispatch(playerDisconnect(players.two));
-      });
-    socket.on("MOBILE_DISCONNECTED", (player) => {
-      dispatch(updateMobileConnection({ player, mobileConnected: false }));
-    });
-
-    isSamePlayer() &&
-      socket.on("PLAYER_READY_UP", (player: PlayerChoices) => {
-        dispatch(toggleReady(player));
-      });
-
-    return () => {
-      socket.removeListener("PLAYER_CONNECTED");
-      socket.removeListener("PLAYER_DISCONNECTED");
-      socket.removeListener("PLAYER_READY_UP");
-    };
-  }, [socket]);
-  // Determines if the device slected matches the connected device
 
   return (
     <div className="choosePlayerContainer">

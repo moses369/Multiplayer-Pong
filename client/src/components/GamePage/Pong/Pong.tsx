@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux";
 import { incrementScore } from "../../../redux/features/game-slice";
@@ -19,10 +25,12 @@ const delta = {
   max: 2.5,
   min: 0.3,
 };
+
 const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   const dispatch = useDispatch();
-  const { winner } = useSelector((state: RootState) => ({
+  const { winner, pongStartPos } = useSelector((state: RootState) => ({
     winner: state.game.winner,
+    pongStartPos: state.game.pongStartPos,
   }));
   const [playAnimation, setPlayAnimation] = useState<boolean>(true); //Determines to play the animation or not
   const [scored, setScored] = useState<PlayerChoices | "">(""); //Dictates which player scored
@@ -121,7 +129,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const paddleRect =
           rects.paddles[directionRef.current.left ? "left" : "right"];
         const pongRect = rects.pong;
-        const pongHeightThird = pongRect.height / 5;
+        const pongHeightToAdd = pongRect.height / 1.5;
         const paddleHeight = {
           eigth: paddleRect.height / 8,
           half: paddleRect.height / 2,
@@ -131,8 +139,8 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
 
         const paddleSection = {
           topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
-          topMid: paddleRect.top + paddleHeight.half - pongHeightThird,
-          bottomMid: paddleRect.bottom - paddleHeight.half + pongHeightThird,
+          topMid: paddleRect.top + paddleHeight.half - pongHeightToAdd,
+          bottomMid: paddleRect.bottom - paddleHeight.half + pongHeightToAdd,
           bottomCorner: paddleRect.bottom - paddleHeight.eigth * 2, // 2/8 of bottom of paddle 6/8
         };
         const paddleBounced = {
@@ -141,10 +149,8 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
             pongRect.bottom <= paddleSection.topCorner &&
             sideBounce,
           mid:
-            ((pongRect.top >= paddleSection.topMid &&
-              pongRect.top <= paddleSection.bottomMid) ||
-              (pongRect.bottom >= paddleSection.topMid &&
-                pongRect.bottom <= paddleSection.bottomMid)) &&
+            pongRect.top >= paddleSection.topMid &&
+            pongRect.bottom <= paddleSection.bottomMid &&
             sideBounce,
           bottomCorner:
             pongRect.top <= paddleRect.bottom &&
@@ -169,8 +175,6 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         }
         if (!directionRef.current.paddleBounced && paddleBounced.mid) {
           console.log("mid");
-          offsetRef.current.delta > delta.min + 0.4 &&
-            (offsetRef.current.delta -= 0.1);
           offsetRef.current.horizontal = true;
           setTimeout(() => {
             directionRef.current.paddleBounced = false;
@@ -248,6 +252,18 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
     }, 7000);
   }, []);
   const intervalID = useRef<NodeJS.Timer>();
+
+  /**
+   * Used to randomize the position and direction of the pong on start
+   */
+  useLayoutEffect(() => {
+    if (pongRef.current) {
+      pongRef.current.style.top = `${pongStartPos.top}%`;
+      directionRef.current.left = pongStartPos.left;
+      directionRef.current.up = pongStartPos.up;
+      offsetRef.current.horizontal = pongStartPos.horizontal;
+    }
+  }, []);
 
   useEffect(() => {
     if (!winner) {
