@@ -125,62 +125,62 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
       /**
        * Changes the speed and Y angle of the pong depending on the portion of the paddle it collided with
        */
-      const changeSpeedDirectionOfPong = (): any => {
-        const paddleRect =
-          rects.paddles[directionRef.current.left ? "left" : "right"];
-        const pongRect = rects.pong;
-        const pongHeightToAdd = pongRect.height / 1.5;
-        const paddleHeight = {
-          eigth: paddleRect.height / 8,
-          half: paddleRect.height / 2,
-        };
+      // const changeSpeedDirectionOfPong = (): any => {
+      //   const paddleRect =
+      //     rects.paddles[directionRef.current.left ? "left" : "right"];
+      //   const pongRect = rects.pong;
+      //   const pongHeightToAdd = pongRect.height / 1.5;
+      //   const paddleHeight = {
+      //     eigth: paddleRect.height / 8,
+      //     half: paddleRect.height / 2,
+      //   };
 
-        const sideBounce = sideBetweenPaddle(paddleRect);
+      //   const sideBounce = sideBetweenPaddle(paddleRect);
 
-        const paddleSection = {
-          topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
-          topMid: paddleRect.top + paddleHeight.half - pongHeightToAdd,
-          bottomMid: paddleRect.bottom - paddleHeight.half + pongHeightToAdd,
-          bottomCorner: paddleRect.bottom - paddleHeight.eigth * 2, // 2/8 of bottom of paddle 6/8
-        };
-        const paddleBounced = {
-          topCorner:
-            pongRect.bottom >= paddleRect.top &&
-            pongRect.bottom <= paddleSection.topCorner &&
-            sideBounce,
-          // mid:
-          //   pongRect.top >= paddleSection.topMid &&
-          //   pongRect.bottom <= paddleSection.bottomMid &&
-          //   sideBounce,
-          bottomCorner:
-            pongRect.top <= paddleRect.bottom &&
-            pongRect.top >= paddleSection.bottomCorner &&
-            sideBounce,
-        };
+      //   const paddleSection = {
+      //     topCorner: paddleRect.top + paddleHeight.eigth * 2, // 2/8 of top of paddle 2/8,
+      //     topMid: paddleRect.top + paddleHeight.half - pongHeightToAdd,
+      //     bottomMid: paddleRect.bottom - paddleHeight.half + pongHeightToAdd,
+      //     bottomCorner: paddleRect.bottom - paddleHeight.eigth * 2, // 2/8 of bottom of paddle 6/8
+      //   };
+      //   const paddleBounced = {
+      //     topCorner:
+      //       pongRect.bottom >= paddleRect.top &&
+      //       pongRect.bottom <= paddleSection.topCorner &&
+      //       sideBounce,
+      //     // mid:
+      //     //   pongRect.top >= paddleSection.topMid &&
+      //     //   pongRect.bottom <= paddleSection.bottomMid &&
+      //     //   sideBounce,
+      //     bottomCorner:
+      //       pongRect.top <= paddleRect.bottom &&
+      //       pongRect.top >= paddleSection.bottomCorner &&
+      //       sideBounce,
+      //   };
 
-        if (
-          (!directionRef.current.paddleBounced && paddleBounced.topCorner) ||
-          paddleBounced.bottomCorner
-        ) {
-          offsetRef.current.delta < delta.max &&
-            (offsetRef.current.delta += 0.15);
-          console.log(
-            "topcorner",
-            paddleBounced.topCorner,
-            "bottomcorner",
-            paddleBounced.bottomCorner
-          );
-          // paddleBounced.topCorner && (directionRef.current.up = true);
-          // paddleBounced.bottomCorner && (directionRef.current.up = false);
-        }
-        // if (!directionRef.current.paddleBounced && paddleBounced.mid) {
-        //   console.log("mid");
-        //   offsetRef.current.horizontal = true;
-        //   setTimeout(() => {
-        //     directionRef.current.paddleBounced = false;
-        //   }, 200);
-        // }
-      };
+      //   if (
+      //     (!directionRef.current.paddleBounced && paddleBounced.topCorner) ||
+      //     paddleBounced.bottomCorner
+      //   ) {
+      //     offsetRef.current.delta < delta.max &&
+      //       (offsetRef.current.delta += 0.15);
+      //     console.log(
+      //       "topcorner",
+      //       paddleBounced.topCorner,
+      //       "bottomcorner",
+      //       paddleBounced.bottomCorner
+      //     );
+      //     // paddleBounced.topCorner && (directionRef.current.up = true);
+      //     // paddleBounced.bottomCorner && (directionRef.current.up = false);
+      //   }
+      //   // if (!directionRef.current.paddleBounced && paddleBounced.mid) {
+      //   //   console.log("mid");
+      //   //   offsetRef.current.horizontal = true;
+      //   //   setTimeout(() => {
+      //   //     directionRef.current.paddleBounced = false;
+      //   //   }, 200);
+      //   // }
+      // };
 
       /**
        * Logic to find out if the Pong has collided with the paddle reversing its x direction
@@ -194,7 +194,7 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         const inBetween = inBetweenPaddles(paddleRect);
         if (!directionRef.current.paddleBounced && sideBounce && inBetween) {
           offsetRef.current.horizontal = false;
-          changeSpeedDirectionOfPong();
+          // changeSpeedDirectionOfPong();
           directionRef.current.left = !directionRef.current.left;
           directionRef.current.paddleBounced = true;
         }
