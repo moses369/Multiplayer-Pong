@@ -3,8 +3,6 @@ import { useSelector } from "react-redux";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { RootState } from "../../redux";
 
-import TouchPoint from "../../components/ControllerPage/TouchPoint/TouchPoint";
-
 import "./ControllerPage.css";
 import useEmitPaddleMove from "../../customHook/useEmitPaddleMove";
 import useScreenSize from "../../customHook/useScreenSize";
