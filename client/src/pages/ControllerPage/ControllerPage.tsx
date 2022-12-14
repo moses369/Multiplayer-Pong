@@ -22,7 +22,6 @@ const {viewportHeight} = useScreenSize()
       console.log(touchY);
     }else{
       emitMove(touchY, false, false);
-
     }
   };
 
