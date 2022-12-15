@@ -41,7 +41,7 @@ const ChoosePlayer = ({ playerNum,guestConnected, }: ChoosePlayerProps) => {
   }));
 
   const isSamePlayer = () => playerNum === parseInt(player[6]);
- console.log(guestConnected);
+
  
 
 

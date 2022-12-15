@@ -19,7 +19,6 @@ const {viewportHeight} = useScreenSize()
     if (touchY > -0.47 && touchY < 0.47) {
       touchY !== ylocation.current && emitMove(touchY, true, false);
       ylocation.current = touchY
-      console.log(touchY);
     }else{
       emitMove(touchY, false, false);
     }
@@ -28,13 +27,6 @@ const {viewportHeight} = useScreenSize()
   return (
     <div
       className="controllerPageContainer playSurface"
-      // onPointerDown={(e) =>{
-      //   console.log('start')
-      // }}
-      // onPointerUp ={(e) => {
-      //   console.log('end')
-
-      // }}
       onTouchMove={handleMovement}
       onTouchEnd={(e)=>emitMove(ylocation.current, false, false)}
 

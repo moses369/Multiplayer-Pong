@@ -26,7 +26,6 @@ const ServerSelect = () => {
     if (servers.length === 0) {
       socket.emit("GET_SERVERS", (newServers: Server[]) => {
         if (newServers.length > 0) {
-          console.log("Got servers");
           dispatch(fillServerList(newServers));
         }
       });
@@ -35,13 +34,10 @@ const ServerSelect = () => {
       "UPDATE_SERVERLIST",
       (server: Server, alreadySent: boolean, deleted: boolean) => {
         if (!alreadySent) {
-          console.log("add server");
           dispatch(addServer(server));
         } else if (!deleted) {
-          console.log('update server');
           dispatch(updateServer(server));
         } else if (deleted) {
-          console.log('delete server');
           dispatch(deleteServer(server.id));
         }
       }

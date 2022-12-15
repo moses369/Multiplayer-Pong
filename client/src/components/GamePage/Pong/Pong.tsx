@@ -172,17 +172,10 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
         ) {
           offsetRef.current.delta < delta.max &&
             (offsetRef.current.delta += 0.15);
-          console.log(
-            "topcorner",
-            paddleBounced.topCorner,
-            "bottomcorner",
-            paddleBounced.bottomCorner
-          );
           paddleBounced.topCorner && (directionRef.current.up = true);
           paddleBounced.bottomCorner && (directionRef.current.up = false);
         }
         if (!directionRef.current.paddleBounced && paddleBounced.mid) {
-          console.log("mid");
           offsetRef.current.horizontal = true;
           setTimeout(() => {
             directionRef.current.paddleBounced = false;
@@ -280,8 +273,6 @@ const Pong = ({ paddle1Ref, paddle2Ref, resetRound }: Props) => {
   useEffect(() => {
     !host &&
       socket.on("GET_PONG", (move) => {
-        console.log("got pong pos");
-
         offsetRef.current = move;
       });
     return () => {

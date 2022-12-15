@@ -37,7 +37,6 @@ const usePlayerConnectsInLobby = (setGuestConnected: React.Dispatch<React.SetSta
           dispatch(
             updateMobileConnection({ player: playerConnected, mobileConnected })
           );
-          console.log(playerConnected, "connected", 'did mobile connect', mobileConnected);
         });
   
         socket.on("PLAYER_READY_UP", (player: PlayerChoices) => {
@@ -46,7 +45,6 @@ const usePlayerConnectsInLobby = (setGuestConnected: React.Dispatch<React.SetSta
   
         host &&
           socket.on("PLAYER_DISCONNECTED", () => {
-            console.log("Player left");
             setGuestConnected(false);
             dispatch(playerDisconnect(players.two));
           });

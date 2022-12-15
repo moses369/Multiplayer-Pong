@@ -25,19 +25,14 @@ const GamePage = ({
   const goToLobby = useBackToLobby();
   useEffect(() => {
     socket.on("ON_PLAY_AGAIN", (player: PlayerChoices) => {
-      console.log("wants to play again");
-
       dispatch(togglePlayAgain(player));
     });
     socket.on("PLAYER_DISCONNECTED", () => {
-      console.log("Player left in game");
       setShowGuestDC(true);
       goToLobby();
       dispatch(playerDisconnect(players.two));
     });
     socket.on("GO_TO_LOBBY", () => {
-      console.log("go to lobby");
-
       goToLobby();
     });
     window.addEventListener("beforeunload", (e) => {

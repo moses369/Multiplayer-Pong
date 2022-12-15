@@ -19,8 +19,6 @@ const useLeaveSession = () => {
    */
 return useCallback(() => {
     if (sessionId) {
-      console.log("left");
-
       socket.emit(
         "LEAVE_SESSION",
         sessionId,

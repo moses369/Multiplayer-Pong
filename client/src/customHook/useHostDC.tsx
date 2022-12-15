@@ -38,7 +38,6 @@ const useHostDC = (
   useEffect(() => {
     const role = sessionStorage.getItem(sessionId);
     socket.on("HOST_DISCONNECTED", () => {
-      console.log("host disconected");
       socket.emit("LEAVE_SESSION", sessionId, role);
       location.pathname !== "/" && navigate("/");
 

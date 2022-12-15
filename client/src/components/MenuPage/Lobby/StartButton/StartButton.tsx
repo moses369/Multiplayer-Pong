@@ -40,8 +40,6 @@ const StartButton = () => {
     // If not the host and not a controller navigate to the game board
     if (!host && !isMobile) {
       socket.on("START_GAME", () => {
-        console.log("host started game");
-
         navigate("/game");
       });
     }
