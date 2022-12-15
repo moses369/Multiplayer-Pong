@@ -27,8 +27,8 @@ A multiplayer Pong game, where players can play wwith a friend locally, or with 
 
 ### Cloning the repo
 ```
-$ git clone https://github.com/moses369/Synth-Pong.git
-$ cd Synth-Pong/
+$ git clone https://github.com/moses369/synth-pong.git
+$ cd synth-pong/
 ```
 ### Frontend setup
 In the first terminal
