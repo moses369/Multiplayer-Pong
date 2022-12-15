@@ -2,8 +2,9 @@
 ## Tech Stack
 <p>
 <img src="https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=ffffff&style=for-the-badge" height=30>
-<img src="https://img.shields.io/badge/-React-black?logo=react&logoColor=61DAFB&style=for-the-badge" height=30>
-<img src="https://img.shields.io/badge/-React%20Router-black?logo=react-router&logoColor=CA4245&style=for-the-badge" height=30>
+<img src="https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black&style=for-the-badge" height=30>
+<img src="https://img.shields.io/badge/-React%20Router-CA4245?logo=react-router&logoColor=white&style=for-the-badge" height=30>
+<img src="https://img.shields.io/badge/-Redux-764ABC?logo=redux&logoColor=white&style=for-the-badge" height=30>
 <img src="https://img.shields.io/badge/-CSS3-1572B6?logo=css3&logoColor=white&style=for-the-badge" height=30>
 </p>
 <p>
@@ -21,9 +22,7 @@
 
 
 ## Project Overview
-A neon retro themed multiplayer Pong game. I was really intrigued of the idea of making a multiplayer game on the browser and decided to give it a try.
-I went with Pong because it is historic as some say it was the first game made, and this was my first attempt at a game. I was able to succesfully create a multiplayer game, where players are able to host, and join games. The communication between seperate players is all accomplished through websockets. This was also my first project with TypesScript and using Vite to scaffold my react app. 
-
+A multiplayer Pong game, where players can play wwith a friend locally, or with someone online. This was my first game ever made, and I decided to make it multiplayer as I found it to be intersting in a browser setting. I used websockets to accomplish the multiplayer aspect of the game. This was also my first project using TypeScript and was an amazing experience to better understand it. 
 ## Installation & Setup
 
 ### Cloning the repo
@@ -55,26 +54,37 @@ Open http://localhost:5173/
 
 ### Main Menu 
 ![Main menu demo](./images/menu.gif)
->  - The server list will update live, when players host, join, leave sessions.
->  - Players can join sessions by clicking join in the session list, or by typing it's id in the search bar
->  - Players can connect their mobile phones as a controller, by entering the mobile code in the search bar
+> The server list uses websockets to listen to any other players when they create, leave, join a session, allowing for live updates
+>
+> Players are able to join the game either through the search bar, or through the server list, where they will be connected to that sessions room
+
 
 ### Lobby 
 ![Lobby Demo](./images/lobby.gif)
-> - Host's are notified when a player joins, and leaves through the 'Joined' indicator above Player 2 
-> - Host are not able to star the game until both players ready up
-> - Host can switch the game from online to local, to allow local co-op
-> - Players are notified and sent back to the menu whenever the host disconnects, or switches the lobby to local
+>  When creating a room the host is able to change the game from local to online
+>> Local play allows for local co=op and the game can be started whenever
+>>
+>> Online play requires both players to ready up, before starting the game
+>
+> Host's are notified when a player leaves and joins through the Joined notification obove their indicator. 
+>
+> Controls
+>> Keyboard - controls are enabled at all times 
+>>
+>> Mouse - can be used in online play, as you can't have two mice when playing locally
+>>
+>> Mobile - the player has to touch their paddle and slide their finger up and down to move their paddle
+>>
+>> Mobile controller - players can join the session using their mobile code on their phones, allowing them to control their paddle through their phone.
 
 ### Game
 ![Game Demo](./images/endgame.gif)
-> - First to 11 wins
-> - At the end of the round players are presented with the options to play again, go back to the lobby, or exit to the menu
-> > - If players want to play again and are playing online both players have to click play again
-> - Controls
-> > - In online play, players can use their mouse to control their paddle
-> > - Players can always use there keyboard controls
-> > - On mobile they can drag their paddle up and down by touching and sliding it with their finger, the same goes for the mobile controller
+> I utilized divs to create the game and animations
+>
+> At the end of the round players are given the choice to leave, restart, or go back to the lobby
+
+
+
 
 
 
