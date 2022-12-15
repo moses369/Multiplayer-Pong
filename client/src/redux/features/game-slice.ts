@@ -57,6 +57,7 @@ export const gameSlice = createSlice({
       if (state.playAgain.player1 && state.playAgain.player2) {
         state.score = { player1: 0, player2: 0 };
         state.winner = "";
+        state.playAgain = { player1: false, player2: false }
       }
     },
     syncPongPosition(state, action: PayloadAction<PongStartPos>) {

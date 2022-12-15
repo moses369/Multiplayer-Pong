@@ -267,6 +267,13 @@ io.on("connection", (socket) => {
         socket.to(id).emit("SYNC_PONG", top, left, up, horizontal);
     });
     /**
+     * Gets the pong position during the game
+     */
+    socket.on('SEND_PONG', (id, move) => {
+        console.log('SYNCING PONG MOVE');
+        socket.to(id).emit("GET_PONG", move);
+    });
+    /**
      * Gets all the active sessions and sends them back to the client to fill their server list
      */
     socket.on("GET_SERVERS", (returnServers) => {
