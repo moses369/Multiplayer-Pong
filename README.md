@@ -27,8 +27,8 @@ A multiplayer Pong game, where players can play wwith a friend locally, or with 
 
 ### Cloning the repo
 ```
-$ git clone https://github.com/moses369/Synth-Pong.git
-$ cd Synth-Pong/
+$ git clone https://github.com/moses369/synth-pong.git
+$ cd synth-pong/
 ```
 ### Frontend setup
 In the first terminal
@@ -80,6 +80,8 @@ Open http://localhost:5173/
 ### Game
 ![Game Demo](./images/endgame.gif)
 > I utilized divs to create the game and animations
+>
+> The game is responsive, and will stay in sync on multiple screen sizes when playing multiplayer
 >
 > At the end of the round players are given the choice to leave, restart, or go back to the lobby
 
